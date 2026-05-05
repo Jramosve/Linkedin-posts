@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="slides-format" content="viewport">
+    <title>MEPC 84 — Maritime Investment Impact</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        :root { --color-bg: #0a0f1e; --color-text: #f1f5f9; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html, body { background: var(--color-bg); }
+        body { font-family: 'DM Sans', sans-serif; color: var(--color-text); overflow: hidden; height: 100vh; width: 100vw; }
+        .deck { width: 100vw; height: 100vh; position: relative; }
+        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--color-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transform: scale(0.95); transition: opacity 0.7s ease, transform 0.7s ease; pointer-events: none; overflow: hidden; }
+        .slide.active { opacity: 1; transform: scale(1); pointer-events: all; }
+        .slide > .content { position: relative; z-index: 2; width: 100%; max-width: 1100px; padding: clamp(1.5rem, 4vw, 3.5rem); }
+        .nav-controls { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; z-index: 100; background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); padding: 10px 24px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.09); }
+        .nav-btn { width: 38px; height: 38px; border: none; background: rgba(255,255,255,0.07); color: #0ea5e9; border-radius: 50%; font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s; }
+        .nav-btn:hover { background: rgba(14,165,233,0.2); }
+        .slide-dots { display: flex; gap: 8px; }
+        .slide-dots .dot { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.15); cursor: pointer; transition: background 0.3s, transform 0.3s; }
+        .slide-dots .dot.active { background: #0ea5e9; transform: scale(1.35); }
+        .slide-counter { font-size: 0.78rem; color: #64748b; min-width: 38px; text-align: center; }
+        .reveal { opacity: 0; transform: translateY(20px); }
+        @keyframes float-slow { 0%{transform:translate(0,0) scale(1)} 25%{transform:translate(60px,-50px) scale(1.12)} 50%{transform:translate(-40px,40px) scale(0.9)} 75%{transform:translate(50px,20px) scale(1.08)} 100%{transform:translate(0,0) scale(1)} }
+        @keyframes float-drift { 0%{transform:translate(0,0) scale(1) rotate(0deg)} 33%{transform:translate(-50px,-60px) scale(1.15) rotate(3deg)} 66%{transform:translate(40px,30px) scale(0.88) rotate(-2deg)} 100%{transform:translate(0,0) scale(1) rotate(0deg)} }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-14px)} }
+        .gradient-mesh { position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
+        .blob { position:absolute; border-radius:50%; filter:blur(80px); animation:float-slow 10s ease-in-out infinite; }
+        .blob:nth-child(2){animation:float-drift 14s ease-in-out infinite}
+        .blob:nth-child(3){animation:float-slow 18s ease-in-out infinite reverse}
+        .slide::after { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,0.45) 100%); }
+        .icon-flat { display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; opacity:0.7; }
+        .icon-flat svg { width:100%; height:100%; stroke:#94a3b8; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+        .icon-flat.sm { width:26px; height:26px; }
+        .icon-flat.lg { width:64px; height:64px; }
+        .icon-flat.lg svg { stroke:#38bdf8; opacity:0.85; }
+    </style>
+</head>
+<body>
+<div class="mouse-spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none;"></div>
+<div class="deck">
+
+<!-- ─── SLIDE 1: TITLE ─── -->
+<div class="slide slide-1 active" data-slide="1">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:520px;height:520px;top:-120px;right:-100px;background:#0ea5e9;opacity:0.13;"></div>
+        <div class="blob" style="width:320px;height:320px;bottom:-80px;left:-60px;background:#1d4ed8;opacity:0.11;"></div>
+        <div class="blob" style="width:220px;height:220px;top:38%;left:12%;background:#38bdf8;opacity:0.09;"></div>
+    </div>
+    <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;"></canvas>
+    <div class="content" style="text-align:center;">
+        <div style="display:flex;justify-content:center;margin-bottom:1.4rem;animation:float 3s ease-in-out infinite;">
+            <img src="https://images.squarespace-cdn.com/content/v1/60cad55aac824c1fa4ba0730/d592c1a9-0791-4ea7-9f77-dcc744a49a37/5abb4df555fb7efee257093b8d7e0059.png" alt="IMO logo" style="height:90px; width:auto; opacity:0.85; filter:grayscale(0%) brightness(0) invert(1);">
+        </div>
+        <div class="reveal" style="display:inline-block;background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.3);border-radius:40px;padding:0.3rem 1.2rem;font-size:0.8rem;letter-spacing:0.12em;text-transform:uppercase;color:#38bdf8;margin-bottom:1.2rem;">MEPC 84 · IMO · April–May 2026</div>
+        <h1 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,4.2rem);font-weight:900;background:linear-gradient(135deg,#0ea5e9,#38bdf8,#bae6fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:1rem;">What has happened in the<br>latest IMO meeting</h1>
+        <p class="reveal" style="font-size:clamp(0.9rem,1.4vw,1.15rem);color:#94a3b8;letter-spacing:0.1em;text-transform:uppercase;">Impact on Maritime Infrastructure · Ports & Fleet</p>
+    </div>
+</div>
+
+<!-- ─── SLIDE 2: WHAT HAPPENED ─── -->
+<div class="slide slide-2" data-slide="2">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:380px;height:380px;top:-80px;right:-80px;background:#0ea5e9;opacity:0.08;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-60px;left:-40px;background:#1d4ed8;opacity:0.07;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal" style="text-transform:uppercase;letter-spacing:0.12em;font-size:0.78rem;color:#64748b;margin-bottom:0.5rem;">Session 84 of the Marine Environment Protection Committee</div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.85rem,3.7vw,2.95rem);font-weight:700;margin-bottom:1.3rem;max-width:900px;">MEPC 84 ran from 27 April to 1 May 2026 in London</h2>
+
+        <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:16px;padding:1.5rem 1.7rem;margin-bottom:1rem;">
+            <p style="font-size:1.15rem;line-height:1.55;color:#e2e8f0;max-width:940px;">The main takeaway is that the <strong style="color:#38bdf8;">Net-Zero Framework survived</strong>, despite pressure from the United States, Saudi Arabia, the UAE and other countries seeking to reopen or modify key parts of the framework.</p>
+        </div>
+
+        <div class="reveal" style="background:linear-gradient(135deg,rgba(14,165,233,0.10),rgba(14,165,233,0.04));border:1px solid rgba(14,165,233,0.18);border-radius:16px;padding:1.4rem 1.6rem;margin-bottom:1.2rem;">
+            <p style="font-size:1rem;line-height:1.55;color:#cbd5e1;max-width:930px;">That matters because the debate is no longer only about climate ambition. It is about whether shipowners, ports and investors receive a credible regulatory signal — or remain stuck waiting for a framework that still lacks full political alignment.</p>
+        </div>
+
+        <div class="reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;">
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:0.9rem 1rem;">
+                <div style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;margin-bottom:0.35rem;">Other topics</div>
+                <p style="font-size:0.82rem;color:#94a3b8;line-height:1.4;">CII and short-term efficiency measures remained part of the wider discussion.</p>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:0.9rem 1rem;">
+                <div style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;margin-bottom:0.35rem;">Other topics</div>
+                <p style="font-size:0.82rem;color:#94a3b8;line-height:1.4;">Technical design elements of the GHG package were refined, but not resolved.</p>
+            </div>
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:0.9rem 1rem;">
+                <div style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;margin-bottom:0.35rem;">Other topics</div>
+                <p style="font-size:0.82rem;color:#94a3b8;line-height:1.4;">Negotiations stayed alive, but the core political disagreements were pushed forward.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ─── SLIDE 3: THE NZF ─── -->
+<div class="slide slide-3" data-slide="3">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:400px;height:400px;top:-90px;left:-80px;background:#0ea5e9;opacity:0.09;"></div>
+        <div class="blob" style="width:260px;height:260px;bottom:-60px;right:-40px;background:#7c3aed;opacity:0.07;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal" style="text-transform:uppercase;letter-spacing:0.12em;font-size:0.78rem;color:#0ea5e9;margin-bottom:0.6rem;">Regulatory Framework</div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.2vw,2.6rem);font-weight:700;margin-bottom:0.5rem;">What Is the Net-Zero Framework?</h2>
+        <p class="reveal" style="color:#94a3b8;font-size:0.9rem;margin-bottom:1.2rem;max-width:760px;">The NZF is the IMO's global mechanism to reduce GHG emissions from maritime transport and move the sector toward climate neutrality before 2050.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+            <div class="reveal" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.04));border:1px solid rgba(14,165,233,0.2);border-radius:14px;padding:1.25rem;text-align:center;position:relative;">
+                <span class="icon-flat" style="margin-bottom:0.6rem;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></span>
+                <h3 style="font-size:0.95rem;font-weight:700;color:#38bdf8;margin-bottom:0.35rem;">Carbon Pricing</h3>
+                <div style="font-size:0.68rem;letter-spacing:0.10em;text-transform:uppercase;color:#fca5a5;margin-bottom:0.45rem;">Highest disagreement</div>
+                <p style="font-size:0.81rem;color:#94a3b8;line-height:1.45;">A price on carbon to incentivize the transition to alternative fuels across the global merchant fleet.</p>
+            </div>
+            <div class="reveal" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.04));border:1px solid rgba(14,165,233,0.2);border-radius:14px;padding:1.25rem;text-align:center;position:relative;">
+                <span class="icon-flat" style="margin-bottom:0.6rem;"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><path d="M9 9h.01M15 9h.01"/></svg></span>
+                <h3 style="font-size:0.95rem;font-weight:700;color:#38bdf8;margin-bottom:0.35rem;">Fuel Standard</h3>
+                <div style="font-size:0.68rem;letter-spacing:0.10em;text-transform:uppercase;color:#cbd5e1;margin-bottom:0.45rem;">Partial disagreement</div>
+                <p style="font-size:0.81rem;color:#94a3b8;line-height:1.45;">A progressive reduction in the carbon intensity of marine fuel through a global IMO standard.</p>
+            </div>
+            <div class="reveal" style="background:linear-gradient(135deg,rgba(14,165,233,0.12),rgba(14,165,233,0.04));border:1px solid rgba(14,165,233,0.2);border-radius:14px;padding:1.25rem;text-align:center;position:relative;">
+                <span class="icon-flat" style="margin-bottom:0.6rem;"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></span>
+                <h3 style="font-size:0.95rem;font-weight:700;color:#38bdf8;margin-bottom:0.35rem;">Green Fund</h3>
+                <div style="font-size:0.68rem;letter-spacing:0.10em;text-transform:uppercase;color:#cbd5e1;margin-bottom:0.45rem;">Linked to pricing debate</div>
+                <p style="font-size:0.81rem;color:#94a3b8;line-height:1.45;">Carbon pricing revenues directed to transition infrastructure and support for developing countries.</p>
+            </div>
+        </div>
+        <div class="reveal" style="margin-top:1.15rem;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.22);border-radius:12px;padding:1rem 1.2rem;">
+            <p style="font-size:0.88rem;color:#f1f5f9;line-height:1.5;">The lack of adoption has a <strong style="color:#38bdf8;">double downstream impact</strong>: it delays investment in <strong style="color:#e2e8f0;">ships</strong> because owners cannot choose a future-proof fuel pathway, and it delays investment in <strong style="color:#e2e8f0;">ports</strong> because terminals cannot justify which bunkering and electrification infrastructure to build.</p>
+        </div>
+    </div>
+</div>
+<!-- ─── SLIDE 4: FLEET IMPACT ─── -->
+<div class="slide slide-4" data-slide="4">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:360px;height:360px;top:-70px;right:-70px;background:#0ea5e9;opacity:0.09;"></div>
+        <div class="blob" style="width:240px;height:240px;bottom:-50px;left:-40px;background:#0f172a;opacity:0.06;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal" style="text-transform:uppercase;letter-spacing:0.12em;font-size:0.78rem;color:#0ea5e9;margin-bottom:0.6rem;">Impact · Global Fleet</div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.2vw,2.6rem);font-weight:700;margin-bottom:1.2rem;">Uncertainty Paralyses Shipyards</h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;">
+            <div class="reveal" style="border-left:3px solid #0ea5e9;background:rgba(14,165,233,0.06);border-radius:0 12px 12px 0;padding:1.2rem;">
+                <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+                    <span class="icon-flat sm"><svg viewBox="0 0 24 24"><path d="M3 17h18M5 17V9l7-6 7 6v8"/><path d="M9 17v-4h6v4"/></svg></span>
+                    <h3 style="font-size:0.95rem;font-weight:700;color:#e2e8f0;">Shrinking Orderbook</h3>
+                </div>
+                <p style="font-size:0.85rem;color:#94a3b8;line-height:1.5;">Not knowing which fuel will dominate — LNG, methanol, ammonia or hydrogen — shipowners delay newbuilding decisions. Shipyard order books contract.</p>
+            </div>
+            <div class="reveal" style="border-left:3px solid #64748b;background:rgba(100,116,139,0.06);border-radius:0 12px 12px 0;padding:1.2rem;">
+                <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+                    <span class="icon-flat sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+                    <h3 style="font-size:0.95rem;font-weight:700;color:#e2e8f0;">Ageing Fleet</h3>
+                </div>
+                <p style="font-size:0.85rem;color:#94a3b8;line-height:1.5;">Slower newbuilding rates raise the average age of the global fleet. Older vessels mean higher energy consumption, more emissions and greater operating costs.</p>
+            </div>
+            <div class="reveal" style="border-left:3px solid #64748b;background:rgba(100,116,139,0.06);border-radius:0 12px 12px 0;padding:1.2rem;">
+                <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+                    <span class="icon-flat sm"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
+                    <h3 style="font-size:0.95rem;font-weight:700;color:#e2e8f0;">Fragmented Capital</h3>
+                </div>
+                <p style="font-size:0.85rem;color:#94a3b8;line-height:1.5;">Banks and investors demand higher risk premiums when they cannot assess which technology will prevail. More expensive financing, less profitable projects.</p>
+            </div>
+            <div class="reveal" style="border-left:3px solid #64748b;background:rgba(100,116,139,0.06);border-radius:0 12px 12px 0;padding:1.2rem;">
+                <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+                    <span class="icon-flat sm"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+                    <h3 style="font-size:0.95rem;font-weight:700;color:#e2e8f0;">No Economies of Scale</h3>
+                </div>
+                <p style="font-size:0.85rem;color:#94a3b8;line-height:1.5;">Multiple propulsion technologies developed simultaneously prevent any single one from reaching critical mass. Unit costs remain elevated across the board.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ─── SLIDE 5: PORT IMPACT ─── -->
+<div class="slide slide-5" data-slide="5">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:400px;height:400px;top:-100px;left:-80px;background:#0ea5e9;opacity:0.08;"></div>
+        <div class="blob" style="width:280px;height:280px;bottom:-70px;right:-50px;background:#1d4ed8;opacity:0.07;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal" style="text-transform:uppercase;letter-spacing:0.12em;font-size:0.78rem;color:#0ea5e9;margin-bottom:0.6rem;">Impact · Port Infrastructure</div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.2vw,2.6rem);font-weight:700;margin-bottom:0.8rem;">Ports Cannot Plan Without a Clear Signal</h2>
+        <p class="reveal" style="color:#94a3b8;font-size:0.88rem;margin-bottom:1.2rem;max-width:750px;">A port investing today in bunkering infrastructure needs to know which fuel will dominate by 2035. Without an NZF, that calculation is impossible.</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1rem;">
+            <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:1.2rem;text-align:center;">
+                <span class="icon-flat" style="margin-bottom:0.6rem;"><svg viewBox="0 0 24 24"><path d="M3 22V12a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10"/><path d="M3 12V7l9-5 9 5v5"/><line x1="12" y1="2" x2="12" y2="12"/><path d="M12 22v-5"/></svg></span>
+                <h3 style="font-size:0.9rem;font-weight:700;color:#e2e8f0;margin-bottom:0.4rem;">Bunkering on Hold</h3>
+                <p style="font-size:0.8rem;color:#94a3b8;line-height:1.4;">Alternative fuel terminals (ammonia, methanol, H₂) remain on standby or in indefinite pilot phase. No commitment to full-scale build-out.</p>
+            </div>
+            <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:1.2rem;text-align:center;">
+                <span class="icon-flat" style="margin-bottom:0.6rem;"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
+                <h3 style="font-size:0.9rem;font-weight:700;color:#e2e8f0;margin-bottom:0.4rem;">Shore Power Stalled</h3>
+                <p style="font-size:0.8rem;color:#94a3b8;line-height:1.4;">OPS / cold ironing electrification projects lose budget priority amid regulatory uncertainty. Investment decisions deferred year after year.</p>
+            </div>
+            <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:1.2rem;text-align:center;">
+                <span class="icon-flat" style="margin-bottom:0.6rem;"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+                <h3 style="font-size:0.9rem;font-weight:700;color:#e2e8f0;margin-bottom:0.4rem;">Duplicated CAPEX</h3>
+                <p style="font-size:0.8rem;color:#94a3b8;line-height:1.4;">Without technological consensus, investing ports spread capital across multiple infrastructure types — raising total costs without achieving efficiency gains.</p>
+            </div>
+        </div>
+        <div class="reveal" style="background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:0.8rem;">
+            <span class="icon-flat sm"><svg viewBox="0 0 24 24" style="stroke:#38bdf8;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
+            <p style="font-size:0.86rem;color:#bae6fd;line-height:1.4;">Rotterdam, Singapore and the world's major hubs all have energy transition plans that depend directly on the IMO defining the fuel of the future.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ─── SLIDE 6: PARADOX ─── -->
+<div class="slide slide-6" data-slide="6">
+    <div class="gradient-mesh">
+        <div class="blob" style="width:450px;height:450px;top:-100px;right:-90px;background:#0ea5e9;opacity:0.1;"></div>
+        <div class="blob" style="width:300px;height:300px;bottom:-80px;left:-60px;background:#7c3aed;opacity:0.08;"></div>
+    </div>
+    <div class="content">
+        <div class="reveal" style="text-transform:uppercase;letter-spacing:0.12em;font-size:0.78rem;color:#0ea5e9;margin-bottom:0.6rem;">The Paradox</div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.7rem,3.2vw,2.6rem);font-weight:700;margin-bottom:0.5rem;">Diversification Without Direction ≠ Strategy</h2>
+        <p class="reveal" style="color:#94a3b8;font-size:0.9rem;margin-bottom:1.3rem;">Without a clear NZF, the sector does not converge on a solution, <strong style="color:#f1f5f9;">it disperses.</strong> This is not strategic diversification. It is uncertainty disguised as optionality.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem;">
+            <div class="reveal" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.2rem;">
+                <h3 style="font-size:0.88rem;font-weight:700;color:#f87171;margin-bottom:0.6rem;display:flex;align-items:center;gap:0.4rem;">
+                    <span class="icon-flat sm"><svg viewBox="0 0 24 24" style="stroke:#f87171;"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></span> Without NZF
+                </h3>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:0.5rem;">
+                    <li style="font-size:0.82rem;color:#94a3b8;display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#475569;margin-top:2px;">—</span> Capital fragmented across multiple technologies</li>
+                    <li style="font-size:0.82rem;color:#94a3b8;display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#475569;margin-top:2px;">—</span> Port infrastructure duplicated or underutilised</li>
+                    <li style="font-size:0.82rem;color:#94a3b8;display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#475569;margin-top:2px;">—</span> Shipyards with no critical mass in any propulsion</li>
+                    <li style="font-size:0.82rem;color:#94a3b8;display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#475569;margin-top:2px;">—</span> Higher risk premium demanded by financiers</li>
+                </ul>
+            </div>
+            <div class="reveal" style="background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.2);border-radius:14px;padding:1.2rem;">
+                <h3 style="font-size:0.88rem;font-weight:700;color:#38bdf8;margin-bottom:0.6rem;display:flex;align-items:center;gap:0.4rem;">
+                    <span class="icon-flat sm"><svg viewBox="0 0 24 24" style="stroke:#38bdf8;"><polyline points="20 6 9 17 4 12"/></svg></span> With NZF Adopted
+                </h3>
+                <ul style="list-style:none;display:flex;flex-direction:column;gap:0.5rem;">
+                    <li style="font-size:0.82rem;color:#94a3b8;display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#475569;margin-top:2px;">—</span> Clear regulatory signal for owners and investors</li>
+                    <li style="font-size:0.82rem;color:#94a3b8;display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#475569;margin-top:2px;">—</span> Technology convergence and economies of scale</li>
+                    <li style="font-size:0.82rem;color:#94a3b8;display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#475569;margin-top:2px;">—</span> Ports can plan infrastructure on a 10-year horizon</li>
+                    <li style="font-size:0.82rem;color:#94a3b8;display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#475569;margin-top:2px;">—</span> Reduced financial risk premium across the sector</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div><!-- /deck -->
+
+<div class="nav-controls">
+    <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
+    <div class="slide-dots" id="dots"></div>
+    <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
+    <span class="slide-counter" id="counter">1 / 8</span>
+</div>
+
+<script>
+    let current = 1;
+    const total = document.querySelectorAll('.slide').length;
+    const dotsContainer = document.getElementById('dots');
+    const counter = document.getElementById('counter');
+    for (let i = 1; i <= total; i++) { const dot = document.createElement('div'); dot.className = 'dot' + (i === 1 ? ' active' : ''); dot.onclick = () => goToSlide(i); dotsContainer.appendChild(dot); }
+    function goToSlide(n) {
+        const prev = document.querySelector('.slide.active');
+        const next = document.querySelector(`.slide[data-slide="${n}"]`);
+        if (prev) prev.classList.remove('active');
+        if (next) { next.classList.add('active'); animateSlide(next); }
+        current = n; updateNav();
+    }
+    function changeSlide(dir) { let n = current + dir; if (n < 1) n = total; if (n > total) n = 1; goToSlide(n); }
+    function updateNav() { document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i+1===current)); counter.textContent = current + ' / ' + total; }
+    document.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);} if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);} });
+    let tx=0; document.addEventListener('touchstart',e=>tx=e.touches[0].clientX); document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)changeSlide(d>0?1:-1);});
+    function animateSlide(slide) {
+        slide.querySelectorAll('.reveal').forEach((el,i) => {
+            el.style.transition='none'; el.style.opacity='0'; el.style.transform='translateY(20px)'; el.offsetHeight;
+            el.style.transition=`opacity 0.35s ease ${i*0.08}s, transform 0.35s ease ${i*0.08}s`;
+            el.style.opacity='1'; el.style.transform='translateY(0)';
+        });
+    }
+    document.addEventListener('mousemove', e => {
+        const s = document.querySelector('.mouse-spotlight');
+        if(s) s.style.background=`radial-gradient(600px circle at ${e.clientX}px ${e.clientY}px,rgba(14,165,233,0.06),transparent 40%)`;
+    });
+    window.initParticles = function(canvas, opts) {
+        if(!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width=canvas.offsetWidth; canvas.height=canvas.offsetHeight;
+        const interactive=opts.interactive!==false, count=opts.count||(interactive?45:15);
+        let mx=-1000,my=-1000;
+        const particles=Array.from({length:count},()=>({x:Math.random()*canvas.width,y:Math.random()*canvas.height,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,size:Math.random()*2+.8,alpha:Math.random()*.3+.08}));
+        if(interactive){canvas.addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;});canvas.addEventListener('mouseleave',()=>{mx=-1000;my=-1000;});}
+        (function loop(){ctx.clearRect(0,0,canvas.width,canvas.height);particles.forEach(p=>{if(interactive){const dx=p.x-mx,dy=p.y-my,dist=Math.sqrt(dx*dx+dy*dy);if(dist<100){const f=(100-dist)/100*1.5;p.vx+=(dx/dist)*f*.1;p.vy+=(dy/dist)*f*.1;}}p.vx*=.98;p.vy*=.98;p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fillStyle=`rgba(14,165,233,${p.alpha})`;ctx.fill();});requestAnimationFrame(loop);})();
+    };
+    document.querySelectorAll('.particle-canvas').forEach(c=>window.initParticles(c,{interactive:true,count:45}));
+    document.querySelectorAll('.particle-canvas-ambient').forEach(c=>window.initParticles(c,{interactive:false,count:15}));
+    try{animateSlide(document.querySelector('.slide.active'));}catch(e){}
+</script>
+</body>
+</html>
