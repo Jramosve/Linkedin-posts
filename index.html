@@ -39,12 +39,41 @@
         .icon-flat.sm { width:26px; height:26px; }
         .icon-flat.lg { width:64px; height:64px; }
         .icon-flat.lg svg { stroke:#38bdf8; opacity:0.85; }
+
+        /* ── AUTHOR WATERMARK ── */
+        .author-tag {
+            position: fixed;
+            bottom: 22px;
+            right: 28px;
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            color: rgba(148,163,184,0.55);
+            pointer-events: none;
+            user-select: none;
+        }
+        .author-tag::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 1px;
+            background: rgba(14,165,233,0.4);
+        }
+        .author-tag span { color: rgba(56,189,248,0.7); }
     </style>
 </head>
 <body>
 <div class="mouse-spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none;"></div>
-<div class="deck">
 
+<!-- ── AUTHOR WATERMARK (visible on all slides) ── -->
+<div class="author-tag"><span>Javier Ramos</span></div>
+
+<div class="deck">
 <!-- ─── SLIDE 1: TITLE ─── -->
 <div class="slide slide-1 active" data-slide="1">
     <div class="gradient-mesh">
@@ -59,7 +88,7 @@
         </div>
         <div class="reveal" style="display:inline-block;background:rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.3);border-radius:40px;padding:0.3rem 1.2rem;font-size:0.8rem;letter-spacing:0.12em;text-transform:uppercase;color:#38bdf8;margin-bottom:1.2rem;">MEPC 84 · IMO · April–May 2026</div>
         <h1 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(2.2rem,5vw,4.2rem);font-weight:900;background:linear-gradient(135deg,#0ea5e9,#38bdf8,#bae6fd);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;margin-bottom:1rem;">What has happened in the<br>latest IMO meeting</h1>
-        <p class="reveal" style="font-size:clamp(0.9rem,1.4vw,1.15rem);color:#94a3b8;letter-spacing:0.1em;text-transform:uppercase;">Impact on Maritime Infrastructure · Ports & Fleet</p>
+        <p class="reveal" style="font-size:clamp(0.9rem,1.4vw,1.15rem);color:#94a3b8;letter-spacing:0.25em;text-transform:uppercase;">Impact on Maritime Infrastructure · Ports & Fleet</p>
     </div>
 </div>
 
@@ -72,15 +101,12 @@
     <div class="content">
         <div class="reveal" style="text-transform:uppercase;letter-spacing:0.12em;font-size:0.78rem;color:#64748b;margin-bottom:0.5rem;">Session 84 of the Marine Environment Protection Committee</div>
         <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.85rem,3.7vw,2.95rem);font-weight:700;margin-bottom:1.3rem;max-width:900px;">MEPC 84 ran from 27 April to 1 May 2026 in London</h2>
-
         <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:16px;padding:1.5rem 1.7rem;margin-bottom:1rem;">
             <p style="font-size:1.15rem;line-height:1.55;color:#e2e8f0;max-width:940px;">The main takeaway is that the <strong style="color:#38bdf8;">Net-Zero Framework survived</strong>, despite pressure from the United States, Saudi Arabia, the UAE and other countries seeking to reopen or modify key parts of the framework.</p>
         </div>
-
         <div class="reveal" style="background:linear-gradient(135deg,rgba(14,165,233,0.10),rgba(14,165,233,0.04));border:1px solid rgba(14,165,233,0.18);border-radius:16px;padding:1.4rem 1.6rem;margin-bottom:1.2rem;">
             <p style="font-size:1rem;line-height:1.55;color:#cbd5e1;max-width:930px;">That matters because the debate is no longer only about climate ambition. It is about whether shipowners, ports and investors receive a credible regulatory signal — or remain stuck waiting for a framework that still lacks full political alignment.</p>
         </div>
-
         <div class="reveal" style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;">
             <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:0.9rem 1rem;">
                 <div style="font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:#64748b;margin-bottom:0.35rem;">Other topics</div>
@@ -97,6 +123,7 @@
         </div>
     </div>
 </div>
+
 <!-- ─── SLIDE 3: THE NZF ─── -->
 <div class="slide slide-3" data-slide="3">
     <div class="gradient-mesh">
@@ -132,6 +159,7 @@
         </div>
     </div>
 </div>
+
 <!-- ─── SLIDE 4: FLEET IMPACT ─── -->
 <div class="slide slide-4" data-slide="4">
     <div class="gradient-mesh">
@@ -188,17 +216,17 @@
             <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:1.2rem;text-align:center;">
                 <span class="icon-flat" style="margin-bottom:0.6rem;"><svg viewBox="0 0 24 24"><path d="M3 22V12a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10"/><path d="M3 12V7l9-5 9 5v5"/><line x1="12" y1="2" x2="12" y2="12"/><path d="M12 22v-5"/></svg></span>
                 <h3 style="font-size:0.9rem;font-weight:700;color:#e2e8f0;margin-bottom:0.4rem;">Bunkering on Hold</h3>
-                <p style="font-size:0.8rem;color:#94a3b8;line-height:1.4;">Alternative fuel terminals (ammonia, methanol, H₂) remain on standby or in indefinite pilot phase. No commitment to full-scale build-out.</p>
+                <p style="font-size:0.8rem;color:#94a3b8;line-height:1.4;">Alternative fuel terminals (ammonia, methanol, H₂) remain on standby or in indefinite pilot phase.</p>
             </div>
             <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:1.2rem;text-align:center;">
                 <span class="icon-flat" style="margin-bottom:0.6rem;"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>
                 <h3 style="font-size:0.9rem;font-weight:700;color:#e2e8f0;margin-bottom:0.4rem;">Shore Power Stalled</h3>
-                <p style="font-size:0.8rem;color:#94a3b8;line-height:1.4;">OPS / cold ironing electrification projects lose budget priority amid regulatory uncertainty. Investment decisions deferred year after year.</p>
+                <p style="font-size:0.8rem;color:#94a3b8;line-height:1.4;">OPS / cold ironing electrification projects lose budget priority amid regulatory uncertainty.</p>
             </div>
             <div class="reveal" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:14px;padding:1.2rem;text-align:center;">
                 <span class="icon-flat" style="margin-bottom:0.6rem;"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
                 <h3 style="font-size:0.9rem;font-weight:700;color:#e2e8f0;margin-bottom:0.4rem;">Duplicated CAPEX</h3>
-                <p style="font-size:0.8rem;color:#94a3b8;line-height:1.4;">Without technological consensus, investing ports spread capital across multiple infrastructure types — raising total costs without achieving efficiency gains.</p>
+                <p style="font-size:0.8rem;color:#94a3b8;line-height:1.4;">Without technological consensus, ports spread capital across multiple infrastructure types — raising costs without efficiency gains.</p>
             </div>
         </div>
         <div class="reveal" style="background:rgba(14,165,233,0.08);border:1px solid rgba(14,165,233,0.2);border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:0.8rem;">
@@ -245,14 +273,13 @@
     </div>
 </div>
 
-
 </div><!-- /deck -->
 
 <div class="nav-controls">
     <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
     <div class="slide-dots" id="dots"></div>
     <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
-    <span class="slide-counter" id="counter">1 / 8</span>
+    <span class="slide-counter" id="counter">1 / 6</span>
 </div>
 
 <script>
