@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marina Investment · Emerging Markets 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root{--bg:#080c18;--text:#f1f5f9;--muted:#475569;--gold:#f59e0b;--green:#4ade80;--red:#f87171;--slate:#38bdf8;--purple:#a78bfa;}
+        *{box-sizing:border-box;margin:0;padding:0;}
+        html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-family:"DM Sans",sans-serif;color:var(--text);}
+
+        /* DECK */
+        .deck{width:100vw;height:100vh;position:relative;}
+        .slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0.97);transition:opacity 0.5s ease,transform 0.5s ease;pointer-events:none;overflow:hidden;}
+        .slide.active{opacity:1;transform:scale(1);pointer-events:all;}
+        .content{position:relative;z-index:2;width:100%;max-width:1100px;padding:clamp(1.4rem,3vw,2.8rem);}
+        .reveal{opacity:0;transform:translateY(14px);}
+        .blob{position:absolute;border-radius:50%;filter:blur(90px);}
+        @keyframes float-slow{0%{transform:translate(0,0)}50%{transform:translate(40px,-35px)}100%{transform:translate(0,0)}}
+        .blob{animation:float-slow 14s ease-in-out infinite;}
+
+        /* NAV */
+        .nav-controls{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:200;background:rgba(255,255,255,0.04);backdrop-filter:blur(12px);padding:8px 20px;border-radius:40px;border:1px solid rgba(255,255,255,0.08);}
+        .nav-btn{width:32px;height:32px;border:none;background:rgba(255,255,255,0.06);color:var(--slate);border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+        .nav-btn:hover{background:rgba(14,165,233,0.18);}
+        .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.12);cursor:pointer;transition:all 0.3s;}
+        .dot.active{background:var(--slate);transform:scale(1.4);}
+        .slide-counter{font-size:0.68rem;color:var(--muted);min-width:32px;text-align:center;}
+        .author-tag{position:fixed;bottom:20px;right:26px;z-index:300;font-size:0.63rem;font-weight:600;letter-spacing:0.05em;color:rgba(148,163,184,0.35);pointer-events:none;}
+
+        /* UTILS */
+        .label{font-size:0.6rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;}
+        .pill{font-size:0.58rem;font-weight:700;padding:2px 8px;border-radius:4px;}
+        .p-pos{background:rgba(74,222,128,0.12);color:#4ade80;}
+        .p-neg{background:rgba(248,113,113,0.12);color:#f87171;}
+        .p-neu{background:rgba(245,158,11,0.12);color:#f59e0b;}
+        .p-blue{background:rgba(56,189,248,0.12);color:#38bdf8;}
+        .row{display:flex;justify-content:space-between;align-items:center;padding:0.34rem 0;border-bottom:1px solid rgba(255,255,255,0.05);}
+        .row:last-child{border-bottom:none;}
+
+        /* MAP SLIDE LAYOUT */
+        .map-layout{display:grid;grid-template-rows:auto 1fr auto auto;height:100vh;padding:1.4rem 2rem 0.85rem;gap:0.55rem;}
+        #map{width:100%;height:100%;border-radius:12px;border:1px solid rgba(255,255,255,0.07);overflow:hidden;}
+        .leaflet-container{background:#060d1a!important;cursor:default!important;}
+        .leaflet-grab,.leaflet-grabbing{cursor:default!important;}
+        .leaflet-interactive{cursor:pointer!important;}
+        .leaflet-control-zoom,.leaflet-control-attribution{display:none!important;}
+        .leaflet-popup-content-wrapper{background:rgba(5,9,20,0.97)!important;border:1px solid rgba(255,255,255,0.09)!important;border-radius:10px!important;box-shadow:0 16px 48px rgba(0,0,0,0.8)!important;backdrop-filter:blur(18px);}
+        .leaflet-popup-tip-container{display:none!important;}
+        .leaflet-popup-content{margin:0!important;padding:0!important;}
+        .pi{padding:0.85rem 1rem;min-width:220px;}
+        .pt{font-size:0.8rem;font-weight:700;margin-bottom:0.12rem;}
+        .ps{font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:#1e3a5f;margin-bottom:0.5rem;}
+        .pr{display:flex;justify-content:space-between;gap:1rem;padding:0.2rem 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:0.69rem;}
+        .pr:last-of-type{border:none;}
+        .pr span:first-child{color:#334155;}
+        .pr span:last-child{font-weight:600;color:#e2e8f0;}
+        .pp{display:inline-block;margin-top:0.42rem;padding:2px 8px;border-radius:4px;font-size:0.57rem;font-weight:700;}
+        .leaflet-popup-close-button{color:#1e3a5f!important;font-size:1rem!important;top:5px!important;right:7px!important;}
+        @keyframes pring{0%{transform:translate(-50%,-50%) scale(1);opacity:0.7}100%{transform:translate(-50%,-50%) scale(3.2);opacity:0}}
+        .legend-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0.55rem;}
+        .lc{border-radius:8px;padding:0.48rem 0.72rem;border:1px solid;}
+        .lc-t{font-size:0.6rem;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;margin-bottom:0.15rem;}
+        .lc-b{font-size:0.65rem;color:#334155;line-height:1.38;}
+        .map-footer{display:flex;justify-content:space-between;align-items:center;padding-top:0.32rem;border-top:1px solid rgba(255,255,255,0.04);}
+    </style>
+</head>
+<body>
+<div class="author-tag">Javier Ramos Velasco · José María Serraclara</div>
+<div class="deck">
+
+<!-- ══ SLIDE 1: COVER ══ -->
+<div class="slide active" data-slide="1">
+    <div class="blob" style="width:500px;height:500px;top:-120px;right:-100px;background:#0369a1;opacity:0.13;"></div>
+    <div class="blob" style="width:300px;height:300px;bottom:-80px;left:-60px;background:#1e3a5f;opacity:0.1;animation-delay:4s;"></div>
+    <div class="content" style="text-align:center;">
+        <div class="reveal" style="display:inline-block;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.25);border-radius:40px;padding:0.28rem 1.1rem;font-size:0.72rem;letter-spacing:0.13em;text-transform:uppercase;color:#f59e0b;margin-bottom:1.4rem;">Marina Investment Report · 2026</div>
+        <h1 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,4rem);font-weight:900;line-height:1.1;margin-bottom:1rem;">Marina Investment in<br><span style="color:#38bdf8;">Emerging Markets</span></h1>
+        <p class="reveal" style="font-size:clamp(0.85rem,1.3vw,1rem);color:#94a3b8;max-width:620px;margin:0 auto 2rem;line-height:1.7;">A structural analysis of where global berth supply is collapsing, where capital is moving, and which emerging markets are positioned to capture the next wave of superyacht investment.</p>
+        <div class="reveal" style="display:flex;justify-content:center;gap:2.5rem;margin-bottom:2rem;flex-wrap:wrap;">
+            <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;">USD 19bn</div><div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:0.1rem;">Global marina market 2025</div></div>
+            <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
+            <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#f59e0b;">5.7% CAGR</div><div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:0.1rem;">Projected to 2030</div></div>
+            <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
+            <div style="text-align:center;"><div style="font-size:1.5rem;font-weight:800;color:#f87171;">&lt;1%</div><div style="font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:0.1rem;">Med berth growth per year</div></div>
+        </div>
+        <p class="reveal" style="font-size:0.75rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:rgba(56,189,248,0.6);">Javier Ramos Velasco · José María Serraclara</p>
+        <p class="reveal" style="margin-top:0.3rem;font-size:0.65rem;color:#1e293b;">Maritime Infrastructure and Investment · 2026</p>
+    </div>
+</div>
+
+<!-- ══ SLIDE 2: MAP ══ -->
+<div class="slide" data-slide="2" style="padding:0;align-items:stretch;">
+    <div class="map-layout" style="width:100%;position:relative;z-index:2;">
+        <div>
+            <div class="label" style="color:var(--muted);margin-bottom:0.18rem;">Global Market Landscape · Marina Investment 2026</div>
+            <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.1rem,2.2vw,1.65rem);font-weight:700;line-height:1.15;">Where Superyachts Go. <span style="color:#38bdf8;">And Where They Cannot Fit.</span></h2>
+        </div>
+        <div id="map"></div>
+        <div class="legend-grid">
+            <div class="lc" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.2);"><div class="lc-t" style="color:#f59e0b;">● Mediterranean &amp; Caribbean</div><div class="lc-b">Med peak Jul–Aug · Caribbean peak Dec–Apr · Complementary seasons · Both saturated</div></div>
+            <div class="lc" style="background:rgba(248,113,113,0.06);border-color:rgba(248,113,113,0.2);"><div class="lc-t" style="color:#f87171;">● GCC · Middle East</div><div class="lc-b">Fastest growing until 2025 · Iran-US conflict repricing investment risk</div></div>
+            <div class="lc" style="background:rgba(74,222,128,0.06);border-color:rgba(74,222,128,0.2);"><div class="lc-t" style="color:#4ade80;">● Southeast Asia</div><div class="lc-b">Top-10 aviation destination · Under 2,000 quality berths · First mover window</div></div>
+            <div class="lc" style="background:rgba(167,139,250,0.06);border-color:rgba(167,139,250,0.2);"><div class="lc-t" style="color:#a78bfa;">● Emerging Watchlist</div><div class="lc-b">East Med, Indian Ocean · Medium to long-term plays · Lower upside</div></div>
+        </div>
+        <div class="map-footer">
+            <span style="font-size:0.63rem;font-weight:600;color:rgba(56,189,248,0.4);letter-spacing:0.06em;">Javier Ramos Velasco · José María Serraclara · Maritime Infrastructure &amp; Investment 2026</span>
+            <span style="font-size:0.55rem;color:#1e293b;">Sources: The Superyacht Agency · Gulf Superyacht Report 2025-26 · Nation Thailand 2026 · Marine Online</span>
+        </div>
+    </div>
+</div>
+
+<!-- ══ SLIDE 3: TRADITIONAL MARKETS ══ -->
+<div class="slide" data-slide="3">
+    <div class="blob" style="width:300px;height:300px;top:-60px;right:-60px;background:#1e3a5f;opacity:0.1;"></div>
+    <div class="content">
+        <div class="reveal label" style="color:var(--muted);margin-bottom:0.3rem;">Traditional Markets</div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.4rem,2.8vw,2rem);font-weight:700;margin-bottom:1rem;">Mediterranean and Caribbean: <span style="color:#f59e0b;">Full. Expensive. Exporting Demand.</span></h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.15);border-radius:12px;padding:1.2rem;border-top:2px solid #f59e0b;">
+                <div class="reveal label" style="color:#f59e0b;margin-bottom:0.6rem;">Mediterranean · The Saturated Giant</div>
+                <p class="reveal" style="font-size:0.82rem;color:#94a3b8;line-height:1.65;margin-bottom:0.9rem;">Seventy percent of the global superyacht fleet converges on the Western Mediterranean each summer. The result is a structural supply crisis that has been building for a decade. Fleet growth runs at 120 to 150 new yachts per year. Berth supply grows at under 1% annually. Environmental regulations, urban density, and physical coastline constraints make expansion technically and politically near-impossible in the primary locations.</p>
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;"><span class="label">Key Figures</span><span class="label" style="color:#1e3a5f;">Status</span></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">24m+ berths available</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">4,500–4,800</span><span class="pill p-neg">Undersupplied</span></div></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">Yachts at peak weeks</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">5,000+</span><span class="pill p-neg">Overflow</span></div></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">Annual berth supply growth</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">&lt;1%</span><span class="pill p-neg">Critical</span></div></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">Refit yards at capacity</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">70% surveyed</span><span class="pill p-neg">Bottleneck</span></div></div>
+                <div style="margin-top:0.9rem;padding:0.7rem;background:rgba(245,158,11,0.06);border-radius:6px;border-left:2px solid #f59e0b;">
+                    <p style="font-size:0.75rem;color:#94a3b8;line-height:1.6;">The bottleneck is no longer cyclical. It is structural. Every new delivery without a matching berth pushes demand outward.</p>
+                </div>
+            </div>
+            <div style="background:rgba(245,158,11,0.04);border:1px solid rgba(245,158,11,0.15);border-radius:12px;padding:1.2rem;border-top:2px solid rgba(245,158,11,0.45);">
+                <div class="reveal label" style="color:#f59e0b;margin-bottom:0.6rem;">Caribbean · Complementary but Consolidating</div>
+                <p class="reveal" style="font-size:0.82rem;color:#94a3b8;line-height:1.65;margin-bottom:0.9rem;">The Caribbean captures the Mediterranean overflow each winter, operating on a near-perfect complementary season from November to April. However, the Caribbean is now at its own ceiling in premium locations. Antigua, Saint Martin, the BVI, and the Grenadines have very limited berth expansion potential. New investment is going into asset consolidation and ancillary real estate, not new marina infrastructure. The market is maturing, not growing.</p>
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.4rem;"><span class="label">Key Figures</span><span class="label" style="color:#1e3a5f;">Status</span></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">Peak season</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">Dec – Apr peak · Nov–Apr season</span><span class="pill p-blue">Complements Med</span></div></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">Investment trend 2025–26</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">Consolidation</span><span class="pill p-neu">M&amp;A driven</span></div></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">Berth expansion outlook</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">Limited</span><span class="pill p-neg">Constrained</span></div></div>
+                <div style="margin-top:0.9rem;padding:0.7rem;background:rgba(245,158,11,0.06);border-radius:6px;border-left:2px solid rgba(245,158,11,0.4);">
+                    <p style="font-size:0.75rem;color:#94a3b8;line-height:1.6;">The Caribbean does not compete with the Mediterranean. It completes it. When the Med closes in October, the Caribbean opens. The same yachts, the same clients, a different ocean.</p>
+                </div>
+            </div>
+        </div>
+        <div class="reveal" style="margin-top:0.5rem;font-size:0.58rem;color:#1e293b;text-align:center;">Sources: Marine Online · Mediterranean Superyacht Forum 2025 · Marina World · Caribbean Property Report 2025</div>
+    </div>
+</div>
+
+<!-- ══ SLIDE 4: GCC + ALTERNATIVES ══ -->
+<div class="slide" data-slide="4">
+    <div class="blob" style="width:300px;height:300px;top:-60px;right:-60px;background:#0369a1;opacity:0.1;"></div>
+    <div class="content">
+        <div class="reveal label" style="color:var(--muted);margin-bottom:0.3rem;">Emerging Markets</div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.4rem,2.8vw,2rem);font-weight:700;margin-bottom:1rem;">GCC Under Pressure. <span style="color:#38bdf8;">Where Does the Capital Go?</span></h2>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+            <div style="background:rgba(248,113,113,0.04);border:1px solid rgba(248,113,113,0.15);border-radius:12px;padding:1.2rem;border-top:2px solid #f87171;">
+                <div class="reveal label" style="color:#f87171;margin-bottom:0.6rem;">GCC · The Disrupted Frontrunner</div>
+                <p class="reveal" style="font-size:0.82rem;color:#94a3b8;line-height:1.65;margin-bottom:0.75rem;">The GCC does not share a season with the Mediterranean — it competes with the Caribbean and Southeast Asia for the same HNW owner during the winter months, October to April. Dubai, Abu Dhabi, and Oman were building the infrastructure to capture that demand. NMDC won a USD 104m marina contract in Salalah in May 2025. Oman tendered a luxury marina in Quriyat the same month. The capital commitment was real.</p>
+                <p style="font-size:0.82rem;color:#94a3b8;line-height:1.65;margin-bottom:0.75rem;">Then the Iran conflict changed the calculus. US airstrikes on Iranian nuclear facilities in June 2025 triggered a proposed closure of the Strait of Hormuz and a 60% spike in maritime insurance premiums. The GCC now hosts 321 superyachts but the investment pipeline has slowed materially. When owners cannot fly into Dubai feeling safe, the leisure economy stalls regardless of infrastructure quality.</p>
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.35rem;"><span class="label">Key Metrics</span><span class="label" style="color:#1e3a5f;">Status</span></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">Superyachts 30m+ in region</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">321 vessels</span><span class="pill p-blue">5.1% global</span></div></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">Insurance premium surge</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">+60%</span><span class="pill p-neg">Risk elevated</span></div></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">GCC contract awards 2025</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">–40% YoY</span><span class="pill p-neg">Slowing</span></div></div>
+                <div class="row"><span style="font-size:0.75rem;color:#475569;">Oman marina pipeline</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.78rem;font-weight:600;">USD 150m+</span><span class="pill p-neu">Active</span></div></div>
+                <div style="margin-top:0.8rem;padding:0.65rem;background:rgba(248,113,113,0.06);border-radius:6px;border-left:2px solid #f87171;">
+                    <p style="font-size:0.74rem;color:#94a3b8;line-height:1.6;">Capital that was allocated to the Gulf is now looking for alternatives with similar seasons and lower sovereign risk.</p>
+                </div>
+            </div>
+            <div style="background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.15);border-radius:12px;padding:1.2rem;border-top:2px solid #4ade80;">
+                <div class="reveal label" style="color:#4ade80;margin-bottom:0.6rem;">Alternative Receptors · Where GCC Capital Redirects</div>
+                <p class="reveal" style="font-size:0.82rem;color:#94a3b8;line-height:1.65;margin-bottom:0.8rem;">Three markets are positioned to absorb displaced GCC investment, each with a different risk and return profile.</p>
+                <div style="display:flex;flex-direction:column;gap:0.6rem;">
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:0.7rem 0.9rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.22rem;"><span style="font-size:0.72rem;font-weight:700;">Southeast Asia</span><span class="pill p-pos">Highest potential</span></div>
+                        <p style="font-size:0.72rem;color:#475569;line-height:1.55;">Nov–Apr season overlap with GCC · peak Dec–Mar. Under 2,000 quality berths in Thailand. Aviation demand proven. First mover advantage intact.</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:0.7rem 0.9rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.22rem;"><span style="font-size:0.72rem;font-weight:700;">East Mediterranean</span><span class="pill p-neu">Medium term</span></div>
+                        <p style="font-size:0.72rem;color:#475569;line-height:1.55;">Greece, Turkey, Cyprus developing capacity. Inside the Med ecosystem. Lower logistics risk. Limited upside vs frontier markets.</p>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:0.7rem 0.9rem;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.22rem;"><span style="font-size:0.72rem;font-weight:700;">Indian Ocean · Maldives</span><span class="pill p-blue">Niche</span></div>
+                        <p style="font-size:0.72rem;color:#475569;line-height:1.55;">Ultra-premium demand established. Infrastructure gap real. Regulatory complexity high. Suitable for specialist operators only.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="reveal" style="margin-top:0.5rem;font-size:0.58rem;color:#1e293b;text-align:center;">Sources: NMDC Group · Zawya · China Briefing · Gulf Superyacht Report 2025-26 · Atlantic Council · Politico</div>
+    </div>
+</div>
+
+<!-- ══ SLIDE 5: SOUTHEAST ASIA ══ -->
+<div class="slide" data-slide="5">
+    <div class="blob" style="width:360px;height:360px;top:-80px;right:-70px;background:#064e3b;opacity:0.15;"></div>
+    <div class="content">
+        <div class="reveal label" style="color:var(--muted);margin-bottom:0.3rem;">Investment Thesis</div>
+        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.4rem,2.8vw,2rem);font-weight:700;margin-bottom:1rem;">Southeast Asia: <span style="color:#4ade80;">The Underdeveloped Frontier.</span></h2>
+        <div style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:1rem;">
+            <div>
+                <p class="reveal" style="font-size:0.83rem;color:#94a3b8;line-height:1.7;margin-bottom:0.85rem;">Southeast Asia presents what is arguably the most asymmetric opportunity in global marina investment today. The region attracted 140 million air passengers in 2024. Thailand alone received 35 million international visitors, making it a top-ten global aviation destination. Vietnam, Cambodia, and the wider Indochina corridor are growing at comparable rates. The demand signal for high-end coastal tourism is unambiguous.</p>
+                <p class="reveal" style="font-size:0.83rem;color:#94a3b8;line-height:1.7;margin-bottom:0.85rem;">The supply side tells a different story. Thailand has fewer than 2,000 quality berths nationally, concentrated in Phuket across three facilities. Vietnam is committing VND 7,260 billion to 38 yachting projects including two international marinas in Da Nang. Cambodia has no meaningful marina infrastructure. The structural gap between tourism demand and marine infrastructure is among the largest of any high-growth market in the world.</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;">
+                    <div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.18);border-radius:8px;padding:0.65rem;">
+                        <div class="label" style="color:#4ade80;margin-bottom:0.25rem;">Thailand</div>
+                        <div style="font-size:1.3rem;font-weight:800;">&lt;2,000</div>
+                        <div style="font-size:0.63rem;color:#475569;">quality berths nationally</div>
+                        <div style="margin-top:0.35rem;font-size:0.68rem;color:#94a3b8;">35m intl. visitors 2024.</div>
+                    </div>
+                    <div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.18);border-radius:8px;padding:0.65rem;">
+                        <div class="label" style="color:#4ade80;margin-bottom:0.25rem;">Vietnam</div>
+                        <div style="font-size:1.3rem;font-weight:800;">VND 7.26tn</div>
+                        <div style="font-size:0.63rem;color:#475569;">38 yacht projects committed</div>
+                        <div style="margin-top:0.35rem;font-size:0.68rem;color:#94a3b8;">Da Nang · Phu Quoc emerging.</div>
+                    </div>
+                    <div style="background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.12);border-radius:8px;padding:0.65rem;">
+                        <div class="label" style="color:#4ade80;margin-bottom:0.25rem;">Cambodia</div>
+                        <div style="font-size:1.3rem;font-weight:800;">Nascent</div>
+                        <div style="font-size:0.63rem;color:#475569;">no intl. infrastructure</div>
+                        <div style="margin-top:0.35rem;font-size:0.68rem;color:#94a3b8;">TH–KH–VN route in planning.</div>
+                    </div>
+                    <div style="background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.12);border-radius:8px;padding:0.65rem;">
+                        <div class="label" style="color:#4ade80;margin-bottom:0.25rem;">Season</div>
+                        <div style="font-size:1.3rem;font-weight:800;color:#4ade80;">Nov–Apr</div>
+                        <div style="font-size:0.63rem;color:#475569;">dry season · peak Dec–Mar</div>
+                        <div style="margin-top:0.35rem;font-size:0.68rem;color:#94a3b8;">Mirrors GCC and Caribbean.</div>
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:0.7rem;">
+                <div style="background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1rem;">
+                    <div class="label" style="color:#4ade80;margin-bottom:0.55rem;">The Investment Case</div>
+                    <div style="display:flex;flex-direction:column;gap:0.45rem;">
+                        <div style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#4ade80;font-size:0.78rem;">✓</span><span style="font-size:0.77rem;color:#94a3b8;">Proven aviation-driven tourism demand, no need to create the market</span></div>
+                        <div style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#4ade80;font-size:0.78rem;">✓</span><span style="font-size:0.77rem;color:#94a3b8;">Season complement to Mediterranean, same HNW clientele rotating annually</span></div>
+                        <div style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#4ade80;font-size:0.78rem;">✓</span><span style="font-size:0.77rem;color:#94a3b8;">Low competition with a long development runway — the market will not saturate within a decade</span></div>
+                        <div style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#4ade80;font-size:0.78rem;">✓</span><span style="font-size:0.77rem;color:#94a3b8;">Government-backed development programs providing land and regulatory clarity</span></div>
+                        <div style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#f87171;font-size:0.78rem;">△</span><span style="font-size:0.77rem;color:#94a3b8;">Foreign ownership restrictions in Thailand and Vietnam require local partnerships and patient capital</span></div>
+                        <div style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#f87171;font-size:0.78rem;">△</span><span style="font-size:0.77rem;color:#94a3b8;">Draft constraints and lack of navigational charts limit site selection significantly</span></div>
+                        <div style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#f87171;font-size:0.78rem;">△</span><span style="font-size:0.77rem;color:#94a3b8;">No superyacht refit or repair ecosystem exists — a marina alone is not enough, the full support infrastructure must be built from scratch</span></div>
+                        <div style="display:flex;gap:0.5rem;align-items:flex-start;"><span style="color:#f87171;font-size:0.78rem;">△</span><span style="font-size:0.77rem;color:#94a3b8;">No material foreign marina investment has been committed in the region to date — this is a pre-development market, not an emerging one</span></div>
+                    </div>
+                </div>
+                <div style="background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2);border-radius:8px;padding:0.9rem;border-left:2px solid #4ade80;">
+                    <p style="font-size:0.77rem;color:#94a3b8;line-height:1.6;font-style:italic;">"Southeast Asia has the tourism demand, the coastline, the season, and the absence of competition. What it does not yet have is the marine ecosystem to support a superyacht industry — no refit yards, no established provisioning networks, no crew bases. The opportunity is real and the potential is structural. But this is a market that requires vision, patience, and deep local knowledge. It will not be built quickly, and it will not be built without understanding what makes it different from every other market in the world."</p>
+                    <p style="font-size:0.63rem;color:#334155;margin-top:0.35rem;">Javier Ramos Velasco · José María Serraclara · 2026</p>
+                </div>
+            </div>
+        </div>
+        <div class="reveal" style="margin-top:0.4rem;font-size:0.58rem;color:#1e293b;text-align:center;">Sources: Nation Thailand 2026 · Asia Pacific Boating · Bao Da Nang 2024 · Forbes and Partners · Thai Times 2025</div>
+    </div>
+</div>
+
+</div><!-- /deck -->
+
+<!-- NAV -->
+<div class="nav-controls">
+    <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
+    <div style="display:flex;gap:8px;" id="dots"></div>
+    <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
+    <span class="slide-counter" id="counter">1 / 5</span>
+</div>
+
+<script>
+// ── NAV ──
+let cur=1;
+const tot=document.querySelectorAll(".slide").length;
+const dc=document.getElementById("dots");
+const ct=document.getElementById("counter");
+for(let i=1;i<=tot;i++){const d=document.createElement("div");d.className="dot"+(i===1?" active":"");d.onclick=()=>go(i);dc.appendChild(d);}
+function go(n){
+    document.querySelector(".slide.active").classList.remove("active");
+    document.querySelector(`.slide[data-slide="${n}"]`).classList.add("active");
+    cur=n;
+    document.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("active",i+1===cur));
+    ct.textContent=cur+" / "+tot;
+    anim(document.querySelector(".slide.active"));
+    if(n===2&&!window._mapInited) initMap();
+}
+function changeSlide(d){let n=cur+d;if(n<1)n=tot;if(n>tot)n=1;go(n);}
+document.addEventListener("keydown",e=>{if(e.key==="ArrowRight"||e.key===" "){e.preventDefault();changeSlide(1);}if(e.key==="ArrowLeft"){e.preventDefault();changeSlide(-1);}});
+let tx=0;
+document.addEventListener("touchstart",e=>tx=e.touches[0].clientX);
+document.addEventListener("touchend",e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)changeSlide(d>0?1:-1);});
+function anim(slide){slide.querySelectorAll(".reveal").forEach((el,i)=>{el.style.transition="none";el.style.opacity="0";el.style.transform="translateY(14px)";el.offsetHeight;el.style.transition=`opacity 0.32s ease ${i*0.07}s,transform 0.32s ease ${i*0.07}s`;el.style.opacity="1";el.style.transform="translateY(0)";});}
+try{anim(document.querySelector(".slide.active"));}catch(e){}
+
+// ── MAP (lazy init when slide 2 is opened) ──
+function initMap(){
+    window._mapInited=true;
+    const map=L.map("map",{center:[20,35],zoom:2,zoomControl:false,attributionControl:false,dragging:false,touchZoom:false,doubleClickZoom:false,scrollWheelZoom:false,boxZoom:false,keyboard:false});
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png",{subdomains:"abcd",maxZoom:8}).addTo(map);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png",{subdomains:"abcd",maxZoom:8,opacity:0.4}).addTo(map);
+
+    const zs=(color)=>({color,weight:1.5,opacity:0.7,fillColor:color,fillOpacity:0.13,dashArray:"5 5"});
+    L.polygon([[30,-6],[30,36],[42,36],[46,18],[44,8],[38,-6]],zs("#f59e0b")).addTo(map);
+    L.polygon([[9,-85],[9,-60],[24,-60],[26,-75],[22,-88],[14,-90]],zs("#f59e0b")).addTo(map);
+    L.polygon([[12,40],[12,60],[26,60],[30,50],[28,38],[20,38]],zs("#f87171")).addTo(map);
+    L.polygon([[0,98],[0,122],[22,122],[24,100],[16,96],[5,96]],zs("#4ade80")).addTo(map);
+    L.polygon([[-5,68],[-5,80],[8,80],[8,68]],{color:"#a78bfa",weight:1,opacity:0.45,fillColor:"#a78bfa",fillOpacity:0.09,dashArray:"3 5"}).addTo(map);
+    L.polygon([[30,22],[30,36],[42,36],[42,22]],{color:"#a78bfa",weight:1,opacity:0.35,fillColor:"#a78bfa",fillOpacity:0.06,dashArray:"3 5"}).addTo(map);
+
+    function pm(latlng,color,size=16){
+        const s=size,s2=s*2;
+        return L.marker(latlng,{icon:L.divIcon({className:"",iconSize:[s2,s2],iconAnchor:[s,s],html:`<div style="position:relative;width:${s2}px;height:${s2}px;"><div style="position:absolute;top:50%;left:50%;width:${s}px;height:${s}px;border-radius:50%;background:${color};opacity:0.2;transform:translate(-50%,-50%);animation:pring 2s ease-out infinite;"></div><div style="position:absolute;top:50%;left:50%;width:${s*0.62}px;height:${s*0.62}px;border-radius:50%;background:${color};border:2px solid rgba(255,255,255,0.22);transform:translate(-50%,-50%);box-shadow:0 0 ${s}px ${color}55;"></div></div>`})});
+    }
+    function pop(title,sub,rows,pill,color){
+        const r=rows.map(x=>`<div class="pr"><span>${x[0]}</span><span>${x[1]}</span></div>`).join("");
+        return `<div class="pi"><div class="pt" style="color:${color};">${title}</div><div class="ps">${sub}</div>${r}<div><span class="pp" style="background:${color}22;color:${color};">${pill}</span></div></div>`;
+    }
+    const po={maxWidth:255,autoPanPadding:[16,16]};
+
+    pm([37,13],"#f59e0b",18).addTo(map).bindPopup(pop("Mediterranean","TRADITIONAL · SATURATED",[["Berths 24m+","4,500–4,800"],["Fleet at peak","5,000+ yachts"],["Supply growth/yr","< 1%"],["Season","Jul – Aug peak · Apr–Oct season"]],"STRUCTURALLY UNDERSUPPLIED","#f59e0b"),po);
+    pm([15.5,-66],"#f59e0b",14).addTo(map).bindPopup(pop("Caribbean","TRADITIONAL · CONSOLIDATING",[["Key hubs","Antigua · BVI · St Martin"],["Season","Nov–Apr · peak Dec–Mar"],["Investment trend","M&A consolidation"],["New berths","Minimal"]],"MATURING MARKET","#f59e0b"),po);
+    pm([25.2,55.3],"#f87171",18).addTo(map).bindPopup(pop("UAE · Dubai & Abu Dhabi","GCC · DISRUPTED FRONTRUNNER",[["Superyachts 30m+","321 · 5.1% global"],["Season","Oct–Apr · peak Dec–Mar"],["Insurance surge","+60%"],["GCC contracts YoY","–40% in 2025"]],"GEOPOLITICAL RISK · REPRICING","#f87171"),po);
+    pm([22.5,59.5],"#f87171",11).addTo(map).bindPopup(pop("Oman","GCC · ACTIVE PIPELINE",[["Salalah marina","USD 104m · NMDC 2025"],["Quriyat marina","Tender open 2025"],["Total pipeline","USD 150m+"]],"ACTIVE DESPITE HEADWINDS","#f87171"),po);
+    pm([24.5,46.7],"#f87171",11).addTo(map).bindPopup(pop("Saudi Arabia","GCC · VISION 2030",[["NEOM marina","In development"],["Red Sea Project","Luxury coastal tourism"],["Hormuz exposure","Direct risk"]],"LONG-TERM VISION","#f87171"),po);
+    pm([7.9,98.3],"#4ade80",18).addTo(map).bindPopup(pop("Thailand · Phuket","SOUTHEAST ASIA · FRONTIER",[["Quality berths","< 2,000 nationally"],["Facilities","Royal Phuket · Yacht Haven · Ao Po"],["Intl. visitors 2024","35 million"],["Season","Nov–Apr · peak Dec–Mar"]],"HIGHEST POTENTIAL · FIRST MOVER","#4ade80"),po);
+    pm([16.1,108.2],"#4ade80",13).addTo(map).bindPopup(pop("Vietnam · Da Nang & Phu Quoc","SOUTHEAST ASIA · EARLY STAGE",[["Govt. commitment","VND 7,260bn · 38 projects"],["Intl. marinas","2 planned · Da Nang"],["Season","Nov–Apr · peak Dec–Mar"]],"EARLY STAGE · HIGH UPSIDE","#4ade80"),po);
+    pm([10.6,103.8],"#4ade80",11).addTo(map).bindPopup(pop("Cambodia · Sihanoukville","SOUTHEAST ASIA · NASCENT",[["Intl. marinas","None existing"],["Developing","Kep · Kampot · Sihanoukville"],["Season","Nov–Apr · peak Dec–Mar"]],"NASCENT · LONG TERM","#4ade80"),po);
+    pm([4.2,73.5],"#a78bfa",11).addTo(map).bindPopup(pop("Maldives","INDIAN OCEAN · NICHE",[["Demand tier","Ultra-premium"],["Infrastructure gap","Significant"],["Complexity","High regulatory"]],"NICHE · SPECIALIST ONLY","#a78bfa"),po);
+    pm([37.5,26],"#a78bfa",11).addTo(map).bindPopup(pop("East Med · Greece & Turkey","WATCHLIST · WITHIN MED ECOSYSTEM",[["Investment","Capacity expansion"],["Risk","Low · EU / NATO"],["Season","Jul – Aug peak · Apr–Oct season"]],"MEDIUM TERM · LOWER UPSIDE","#a78bfa"),po);
+}
+</script>
+</body>
+</html>
