@@ -1,413 +1,298 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maersk Q1 2026 — Financial Insights</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <style>
-        :root { --color-bg: #080c18; --color-text: #f1f5f9; }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { background: var(--color-bg); }
-        body { font-family: 'DM Sans', sans-serif; color: var(--color-text); overflow: hidden; height: 100vh; width: 100vw; }
-        .deck { width: 100vw; height: 100vh; position: relative; }
-        .slide { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--color-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transform: scale(0.97); transition: opacity 0.6s ease, transform 0.6s ease; pointer-events: none; overflow: hidden; }
-        .slide.active { opacity: 1; transform: scale(1); pointer-events: all; }
-        .slide > .content { position: relative; z-index: 2; width: 100%; max-width: 1100px; padding: clamp(1.5rem, 4vw, 3.2rem); }
-        .nav-controls { position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; z-index: 100; background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); padding: 10px 24px; border-radius: 40px; border: 1px solid rgba(255,255,255,0.08); }
-        .nav-btn { width: 36px; height: 36px; border: none; background: rgba(255,255,255,0.06); color: #0ea5e9; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-        .nav-btn:hover { background: rgba(14,165,233,0.18); }
-        .slide-dots { display: flex; gap: 8px; }
-        .slide-dots .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.12); cursor: pointer; transition: background 0.3s, transform 0.3s; }
-        .slide-dots .dot.active { background: #0ea5e9; transform: scale(1.4); }
-        .slide-counter { font-size: 0.75rem; color: #475569; min-width: 36px; text-align: center; }
-        .reveal { opacity: 0; transform: translateY(18px); }
-        @keyframes float-slow { 0%{transform:translate(0,0) scale(1)} 25%{transform:translate(55px,-45px) scale(1.1)} 50%{transform:translate(-35px,38px) scale(0.92)} 75%{transform:translate(45px,18px) scale(1.07)} 100%{transform:translate(0,0) scale(1)} }
-        @keyframes float-drift { 0%{transform:translate(0,0) scale(1) rotate(0deg)} 33%{transform:translate(-45px,-55px) scale(1.13) rotate(2deg)} 66%{transform:translate(38px,28px) scale(0.9) rotate(-2deg)} 100%{transform:translate(0,0) scale(1) rotate(0deg)} }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
-        .gradient-mesh { position:absolute; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
-        .blob { position:absolute; border-radius:50%; filter:blur(90px); animation:float-slow 12s ease-in-out infinite; }
-        .blob:nth-child(2){animation:float-drift 16s ease-in-out infinite}
-        .blob:nth-child(3){animation:float-slow 20s ease-in-out infinite reverse}
-        .slide::after { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; background:radial-gradient(ellipse at center,transparent 45%,rgba(0,0,0,0.55) 100%); }
-        .icon-flat { display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; }
-        .icon-flat svg { width:100%; height:100%; fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
-        .icon-flat.sm { width:22px; height:22px; }
-        .author-tag { position:fixed; bottom:22px; right:28px; z-index:200; display:flex; align-items:center; gap:0.4rem; font-family:'DM Sans',sans-serif; font-size:0.7rem; font-weight:600; letter-spacing:0.06em; color:rgba(148,163,184,0.45); pointer-events:none; user-select:none; }
-        .author-tag::before { content:''; display:inline-block; width:16px; height:1px; background:rgba(14,165,233,0.35); }
-        .author-tag span { color:rgba(56,189,248,0.6); }
-
-        /* metric cards */
-        .mc { background:rgba(255,255,255,0.035); border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:0.75rem 0.9rem; }
-        .mc-label { font-size:0.62rem; letter-spacing:0.13em; text-transform:uppercase; color:#475569; margin-bottom:0.25rem; }
-        .mc-val { font-size:1.05rem; font-weight:700; color:#e2e8f0; line-height:1.2; }
-        .mc-prev { font-size:0.72rem; color:#334155; margin-top:0.15rem; }
-        .badge { display:inline-block; font-size:0.62rem; font-weight:700; padding:2px 7px; border-radius:6px; margin-top:0.2rem; letter-spacing:0.04em; }
-        .b-neg { background:rgba(239,68,68,0.13); color:#f87171; }
-        .b-pos { background:rgba(34,197,94,0.1); color:#4ade80; }
-        .b-neu { background:rgba(14,165,233,0.1); color:#38bdf8; }
-
-        /* section divider */
-        .sec-div { height:1px; background:rgba(255,255,255,0.06); margin:0.6rem 0; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where Would You Invest in Maritime?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg: #070b14; --text: #f1f5f9; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg); overflow: hidden; height: 100vh; width: 100vw; }
+body { font-family: "DM Sans", sans-serif; color: var(--text); }
+.deck { width: 100vw; height: 100vh; position: relative; }
+.slide { position: absolute; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; opacity: 0; transform: translateY(14px); transition: opacity 0.55s ease, transform 0.55s ease; pointer-events: none; overflow: hidden; }
+.slide.active { opacity: 1; transform: translateY(0); pointer-events: all; }
+.inner { position: relative; z-index: 2; width: 100%; max-width: 1080px; padding: clamp(1.4rem, 3.5vw, 3rem); }
+.mesh { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.blob { position: absolute; border-radius: 50%; filter: blur(100px); }
+@keyframes b1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,-35px)} }
+@keyframes b2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-50px,30px)} }
+.ba { animation: b1 14s ease-in-out infinite; }
+.bb { animation: b2 18s ease-in-out infinite; }
+.slide::after { content:''; position:absolute; inset:0; z-index:1; pointer-events:none; background:radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.6) 100%); }
+.reveal { opacity: 0; transform: translateY(16px); }
+.nav { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 200; display: flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.04); backdrop-filter: blur(14px); border: 1px solid rgba(255,255,255,0.07); border-radius: 40px; padding: 9px 22px; }
+.nbtn { width: 34px; height: 34px; border: none; background: rgba(255,255,255,0.05); color: #38bdf8; border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+.nbtn:hover { background: rgba(56,189,248,0.15); }
+.dots { display: flex; gap: 7px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s; }
+.dot.active { background: #38bdf8; transform: scale(1.5); }
+.ncnt { font-size: 0.72rem; color: #334155; min-width: 32px; text-align: center; }
+.sig { position: fixed; bottom: 20px; right: 26px; z-index: 200; font-size: 0.68rem; color: rgba(56,189,248,0.4); pointer-events: none; letter-spacing: 0.06em; }
+.tag { display: inline-block; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; padding: 3px 12px; border-radius: 40px; }
+.tag-a { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+.tag-b { background: rgba(74,222,128,0.08); color: #4ade80; border: 1px solid rgba(74,222,128,0.18); }
+.tag-c { background: rgba(56,189,248,0.08); color: #38bdf8; border: 1px solid rgba(56,189,248,0.18); }
+.dl { display: inline-block; font-size: 0.63rem; font-weight: 700; padding: 2px 7px; border-radius: 5px; }
+.dn { background: rgba(239,68,68,0.12); color: #f87171; }
+.dp { background: rgba(34,197,94,0.1); color: #4ade80; }
+.img-placeholder { border: 2px dashed rgba(255,255,255,0.12); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.5rem; background: rgba(255,255,255,0.02); }
+.img-placeholder .ph-label { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255,255,255,0.18); }
+.img-placeholder .ph-sub { font-size: 0.6rem; color: rgba(255,255,255,0.1); text-align: center; }
+.metric { padding: 0.72rem 0.8rem; background: rgba(255,255,255,0.025); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; }
+.metric-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:0.38rem; }
+.metric-name { font-size:0.68rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+.metric-level { font-size:0.62rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+.metric-track { width:100%; height:5px; background:rgba(255,255,255,0.06); border-radius:10px; overflow:hidden; margin-bottom:0.45rem; }
+.metric-fill { height:100%; border-radius:10px; }
+.metric-desc { font-size:0.72rem; color:#64748b; line-height:1.45; }
+</style>
 </head>
 <body>
-<div class="mouse-spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none;"></div>
-<div class="author-tag"><span>Javier Ramos Velasco</span></div>
-
+<div class="spotlight" style="position:fixed;inset:0;z-index:99;pointer-events:none;"></div>
+<div class="sig">Javier Ramos Velasco</div>
 <div class="deck">
-
-<!-- ═══════════════════════════════ SLIDE 1: COVER ═══════════════════════════════ -->
-<div class="slide active" data-slide="1">
-    <div class="gradient-mesh">
-        <div class="blob" style="width:560px;height:560px;top:-140px;right:-120px;background:#0369a1;opacity:0.14;"></div>
-        <div class="blob" style="width:360px;height:360px;bottom:-100px;left:-80px;background:#1e3a5f;opacity:0.12;"></div>
-        <div class="blob" style="width:200px;height:200px;top:40%;left:6%;background:#0ea5e9;opacity:0.07;"></div>
+<div class="slide active" data-s="1">
+  <div class="mesh">
+    <div class="blob ba" style="width:500px;height:500px;top:-130px;right:-100px;background:#0369a1;opacity:0.12;"></div>
+    <div class="blob bb" style="width:300px;height:300px;bottom:-90px;left:-60px;background:#1e3a5f;opacity:0.10;"></div>
+  </div>
+  <canvas class="pcanvas" style="position:absolute;inset:0;z-index:1;width:100%;height:100%;"></canvas>
+  <div class="inner" style="display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center;">
+    <div>
+      <div class="reveal" style="font-size:0.7rem;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#334155;margin-bottom:1rem;">Maritime Investment</div>
+      <h1 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.9rem,4vw,3.2rem);font-weight:900;line-height:1.12;margin-bottom:1.4rem;">One capital.<br>Three choices.<br><span style="color:#38bdf8;">Which one?</span></h1>
+      <p class="reveal" style="font-size:0.88rem;color:#475569;line-height:1.7;margin-bottom:1.8rem;">Container shipping, integrated logistics or port terminals — three very different bets on the same industry. The next slides break down how I think about them.</p>
+      <div class="reveal" style="display:flex;gap:0.7rem;flex-wrap:wrap;">
+        <span class="tag tag-a">A — Container Shipping</span>
+        <span class="tag tag-b">B — Logistics</span>
+        <span class="tag tag-c">C — Terminals</span>
+      </div>
+      <p class="reveal" style="margin-top:1.4rem;font-size:0.75rem;color:#1e293b;">Which one would you choose?</p>
     </div>
-    <canvas class="particle-canvas" style="position:absolute;inset:0;z-index:1;width:100%;height:100%;"></canvas>
-    <div class="content" style="text-align:center;">
-
-        <div style="display:flex;justify-content:center;margin-bottom:2rem;animation:float 3.5s ease-in-out infinite;">
-            <img src="https://companieslogo.com/img/orig/MAERSK-B.CO-cdb8c805.png?t=1720244492"
-                 alt="Maersk"
-                 style="height:90px;width:auto;object-fit:contain;">
-        </div>
-
-        <div class="reveal" style="display:inline-block;background:rgba(14,165,233,0.12);border:1px solid rgba(14,165,233,0.25);border-radius:40px;padding:0.28rem 1.1rem;font-size:0.75rem;letter-spacing:0.13em;text-transform:uppercase;color:#38bdf8;margin-bottom:1.3rem;">Interim Report · Q1 2026</div>
-
-        <h1 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(2rem,4.8vw,3.8rem);font-weight:900;color:#f1f5f9;line-height:1.12;margin-bottom:1.4rem;">What Maersk's Q1 Financial<br>Statements Really Tell Us</h1>
-
-        <div class="reveal" style="display:flex;justify-content:center;gap:2rem;margin-bottom:1.6rem;flex-wrap:wrap;">
-            <div style="text-align:center;">
-                <div style="font-size:1.6rem;font-weight:800;color:#f87171;">-USD 192m</div>
-                <div style="font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:#475569;margin-top:0.1rem;">Ocean EBIT</div>
-            </div>
-            <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
-            <div style="text-align:center;">
-                <div style="font-size:1.6rem;font-weight:800;color:#4ade80;">+USD 173m</div>
-                <div style="font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:#475569;margin-top:0.1rem;">Logistics EBIT</div>
-            </div>
-            <div style="width:1px;background:rgba(255,255,255,0.08);"></div>
-            <div style="text-align:center;">
-                <div style="font-size:1.6rem;font-weight:800;color:#38bdf8;">+USD 436m</div>
-                <div style="font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:#475569;margin-top:0.1rem;">Terminals EBIT</div>
-            </div>
-        </div>
-
-        <p class="reveal" style="font-size:0.82rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:rgba(56,189,248,0.65);">Javier Ramos Velasco · Maritime Infrastructure and Investment</p>
-        <p class="reveal" style="margin-top:0.4rem;font-size:0.68rem;color:#1e293b;letter-spacing:0.05em;">Source: A.P. Møller Mærsk Interim Report Q1 2026</p>
+    <div class="reveal" style="display:grid;grid-template-rows:1fr 1fr 1fr;gap:0.75rem;height:400px;">
+      <div class="img-placeholder"><div class="ph-label">A · Container Shipping</div><div class="ph-sub">Add your image here</div></div>
+      <div class="img-placeholder"><div class="ph-label">B · Logistics</div><div class="ph-sub">Add your image here</div></div>
+      <div class="img-placeholder"><div class="ph-label">C · Terminals</div><div class="ph-sub">Add your image here</div></div>
     </div>
+  </div>
 </div>
-
-
-<!-- ═══════════════════════════════ SLIDE 2: KEY FINANCIALS + OTHER FIGURES ═══════════════════════════════ -->
-<div class="slide" data-slide="2">
-    <div class="gradient-mesh">
-        <div class="blob" style="width:360px;height:360px;top:-80px;right:-80px;background:#0369a1;opacity:0.08;"></div>
-        <div class="blob" style="width:240px;height:240px;bottom:-60px;left:-40px;background:#1e3a5f;opacity:0.07;"></div>
-    </div>
-    <div class="content">
-        <div class="reveal" style="text-transform:uppercase;letter-spacing:0.12em;font-size:0.72rem;color:#475569;margin-bottom:0.35rem;">Q1 2025 vs Q1 2026</div>
-        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.5rem,2.8vw,2.2rem);font-weight:700;margin-bottom:1.1rem;">Three Verticals. <span style="color:#38bdf8;">Three Different Stories.</span></h2>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);border-radius:10px;overflow:hidden;">
-
-            <!-- OCEAN -->
-            <div style="background:rgba(255,255,255,0.025);padding:1.2rem;">
-                <div class="reveal" style="font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:#f87171;margin-bottom:0.15rem;">Ocean</div>
-                <div class="reveal" style="font-size:0.88rem;font-weight:700;color:#e2e8f0;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:0.7rem;">Container Shipping</div>
-
-                <div class="reveal" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
-                    <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#0ea5e9;">Key Financials</span>
-                    <span style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#334155;">YoY Growth</span>
-                </div>
-
-                <div style="display:flex;flex-direction:column;margin-bottom:0.9rem;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <span style="font-size:0.75rem;color:#475569;">Revenue</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">USD 8.2bn</span>
-                            <span class="badge b-neg">-9%</span>
-                        </div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <span style="font-size:0.75rem;color:#475569;">Total Cost</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">USD 8.4bn</span>
-                            <span class="badge b-neg">+1%</span>
-                        </div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.45rem 0;">
-                        <span style="font-size:0.8rem;font-weight:700;color:#f87171;">EBIT</span>
-                        <span style="font-size:0.9rem;font-weight:800;color:#f87171;">-USD 192m</span>
-                    </div>
-                </div>
-
-                <div class="reveal" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;padding-top:0.4rem;border-top:1px solid rgba(255,255,255,0.06);">
-                    <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#334155;">Other Figures</span>
-                    <span style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#334155;">YoY Growth</span>
-                </div>
-                <div style="display:flex;flex-direction:column;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <span style="font-size:0.75rem;color:#475569;">Loaded Volume</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">3.7m FFE</span>
-                            <span class="badge b-pos">+9.3%</span>
-                        </div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;">
-                        <span style="font-size:0.75rem;color:#475569;">Avg. Freight Rate</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">USD 2,081/FFE</span>
-                            <span class="badge b-neg">-14%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- LOGISTICS -->
-            <div style="background:rgba(255,255,255,0.018);padding:1.2rem;">
-                <div class="reveal" style="font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:#4ade80;margin-bottom:0.15rem;">Logistics</div>
-                <div class="reveal" style="font-size:0.88rem;font-weight:700;color:#e2e8f0;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:0.7rem;">Logistics and Services</div>
-
-                <div class="reveal" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
-                    <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#0ea5e9;">Key Financials</span>
-                    <span style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#334155;">YoY Growth</span>
-                </div>
-                <div style="display:flex;flex-direction:column;margin-bottom:0.9rem;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <span style="font-size:0.75rem;color:#475569;">Revenue</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">USD 3.8bn</span>
-                            <span class="badge b-pos">+8.7%</span>
-                        </div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <span style="font-size:0.75rem;color:#475569;">Gross Profit</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">USD 692m</span>
-                            <span class="badge b-pos">+13%</span>
-                        </div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.45rem 0;">
-                        <span style="font-size:0.8rem;font-weight:700;color:#4ade80;">EBIT</span>
-                        <span style="font-size:0.9rem;font-weight:800;color:#4ade80;">+USD 173m</span>
-                    </div>
-                </div>
-
-                <div class="reveal" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;padding-top:0.4rem;border-top:1px solid rgba(255,255,255,0.06);">
-                    <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#334155;">Other Figures</span>
-                    <span style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#334155;">YoY Growth</span>
-                </div>
-                <div style="display:flex;flex-direction:column;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <span style="font-size:0.75rem;color:#475569;">EBIT Margin</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">4.6%</span>
-                            <span class="badge b-pos">+50bps</span>
-                        </div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;">
-                        <span style="font-size:0.75rem;color:#475569;">Air Freight Vol.</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">82,000 tonnes</span>
-                            <span class="badge b-pos">+20%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- TERMINALS -->
-            <div style="background:rgba(255,255,255,0.025);padding:1.2rem;">
-                <div class="reveal" style="font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:#38bdf8;margin-bottom:0.15rem;">Terminals</div>
-                <div class="reveal" style="font-size:0.88rem;font-weight:700;color:#e2e8f0;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.06);padding-bottom:0.7rem;">Port Terminals</div>
-
-                <div class="reveal" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;">
-                    <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#0ea5e9;">Key Financials</span>
-                    <span style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#334155;">YoY Growth</span>
-                </div>
-                <div style="display:flex;flex-direction:column;margin-bottom:0.9rem;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <span style="font-size:0.75rem;color:#475569;">Revenue</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">USD 1.3bn</span>
-                            <span class="badge b-pos">+6.7%</span>
-                        </div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <span style="font-size:0.75rem;color:#475569;">Operating Costs</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">USD 0.87bn</span>
-                            <span class="badge b-neu">+6%</span>
-                        </div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.45rem 0;">
-                        <span style="font-size:0.8rem;font-weight:700;color:#38bdf8;">EBIT</span>
-                        <span style="font-size:0.9rem;font-weight:800;color:#38bdf8;">+USD 436m</span>
-                    </div>
-                </div>
-
-                <div class="reveal" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.4rem;padding-top:0.4rem;border-top:1px solid rgba(255,255,255,0.06);">
-                    <span style="font-size:0.6rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#334155;">Other Figures</span>
-                    <span style="font-size:0.55rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#334155;">YoY Growth</span>
-                </div>
-                <div style="display:flex;flex-direction:column;">
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;border-bottom:1px solid rgba(255,255,255,0.04);">
-                        <span style="font-size:0.75rem;color:#475569;">Volumes</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">3.1m moves</span>
-                            <span class="badge b-pos">+5.5%</span>
-                        </div>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center;padding:0.38rem 0;">
-                        <span style="font-size:0.75rem;color:#475569;">Revenue per Move</span>
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <span style="font-size:0.78rem;font-weight:600;color:#e2e8f0;">USD 417</span>
-                            <span class="badge b-pos">+2.2%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
+<div class="slide" data-s="2">
+  <div class="mesh">
+    <div class="blob ba" style="width:600px;height:600px;top:-160px;left:50%;transform:translateX(-50%);background:#0c4a6e;opacity:0.10;"></div>
+    <div class="blob bb" style="width:220px;height:220px;bottom:-60px;right:-40px;background:#312e81;opacity:0.08;"></div>
+  </div>
+  <div class="inner">
+    <div class="reveal" style="font-size:0.7rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#334155;margin-bottom:0.4rem;">Know the industry before you choose</div>
+    <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.35rem,2.5vw,1.9rem);font-weight:700;margin-bottom:1.1rem;">Three ways to think about each vertical. <span style="color:#38bdf8;">Volatility, risk and potential.</span></h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;">
+      <div class="reveal" style="background:rgba(248,113,113,0.04);border:1px solid rgba(248,113,113,0.14);border-radius:16px;padding:1.1rem;display:flex;flex-direction:column;gap:0.75rem;">
+        <div>
+          <span class="tag tag-a" style="margin-bottom:0.6rem;display:inline-block;">A · Container Shipping</span>
+          <div style="font-size:2.4rem;font-weight:900;font-family:'Playfair Display',serif;color:#f87171;line-height:1;">$9T</div>
+          <div style="font-size:0.6rem;color:#334155;text-transform:uppercase;letter-spacing:0.09em;margin-top:0.15rem;">Global trade moved by sea annually</div>
         </div>
-        <div style="margin-top:0.7rem;font-size:0.62rem;color:#1e293b;text-align:center;">Source: A.P. Møller Mærsk Interim Report Q1 2026 · All figures USD</div>
+        <div class="metric">
+        <div class="metric-top"><span class="metric-name" style="color:#f87171;">Volatility</span><span class="metric-level" style="color:#f87171;">HIGH</span></div>
+        <div class="metric-track"><div class="metric-fill" style="width:92%;background:#f87171;"></div></div>
+        <div class="metric-desc">Freight rates can move sharply in a short period. The cycle turns fast and earnings follow.</div>
+    </div><div class="metric">
+        <div class="metric-top"><span class="metric-name" style="color:#fb923c;">Risk</span><span class="metric-level" style="color:#fb923c;">HIGH</span></div>
+        <div class="metric-track"><div class="metric-fill" style="width:84%;background:#fb923c;"></div></div>
+        <div class="metric-desc">Heavy capex, fixed costs and oversupply can hurt returns for years if timing is wrong.</div>
+    </div><div class="metric">
+        <div class="metric-top"><span class="metric-name" style="color:#facc15;">Potential</span><span class="metric-level" style="color:#facc15;">HIGH</span></div>
+        <div class="metric-track"><div class="metric-fill" style="width:78%;background:#facc15;"></div></div>
+        <div class="metric-desc">When the market tightens, the upside is huge. Few maritime segments can rerate this quickly.</div>
     </div>
+      </div>
+      <div class="reveal" style="background:rgba(74,222,128,0.03);border:1px solid rgba(74,222,128,0.13);border-radius:16px;padding:1.1rem;display:flex;flex-direction:column;gap:0.75rem;">
+        <div>
+          <span class="tag tag-b" style="margin-bottom:0.6rem;display:inline-block;">B · Logistics &amp; Services</span>
+          <div style="font-size:2.4rem;font-weight:900;font-family:'Playfair Display',serif;color:#4ade80;line-height:1;">$1.1T</div>
+          <div style="font-size:0.6rem;color:#334155;text-transform:uppercase;letter-spacing:0.09em;margin-top:0.15rem;">Global 3PL market · 6–7% CAGR</div>
+        </div>
+        <div class="metric">
+        <div class="metric-top"><span class="metric-name" style="color:#4ade80;">Volatility</span><span class="metric-level" style="color:#4ade80;">LOW</span></div>
+        <div class="metric-track"><div class="metric-fill" style="width:40%;background:#4ade80;"></div></div>
+        <div class="metric-desc">Contracts and service diversification make revenue more stable than shipping.</div>
+    </div><div class="metric">
+        <div class="metric-top"><span class="metric-name" style="color:#86efac;">Risk</span><span class="metric-level" style="color:#86efac;">MED</span></div>
+        <div class="metric-track"><div class="metric-fill" style="width:48%;background:#86efac;"></div></div>
+        <div class="metric-desc">The downside is usually margin pressure, competition and slower growth rather than collapse.</div>
+    </div><div class="metric">
+        <div class="metric-top"><span class="metric-name" style="color:#facc15;">Potential</span><span class="metric-level" style="color:#facc15;">MED</span></div>
+        <div class="metric-track"><div class="metric-fill" style="width:68%;background:#facc15;"></div></div>
+        <div class="metric-desc">It can compound well over time, especially with scale, but the upside is less explosive.</div>
+    </div>
+      </div>
+      <div class="reveal" style="background:rgba(56,189,248,0.04);border:1px solid rgba(56,189,248,0.16);border-radius:16px;padding:1.1rem;display:flex;flex-direction:column;gap:0.75rem;">
+        <div>
+          <span class="tag tag-c" style="margin-bottom:0.6rem;display:inline-block;">C · Port Terminals</span>
+          <div style="font-size:2.4rem;font-weight:900;font-family:'Playfair Display',serif;color:#38bdf8;line-height:1;">20–40y</div>
+          <div style="font-size:0.6rem;color:#334155;text-transform:uppercase;letter-spacing:0.09em;margin-top:0.15rem;">Typical concession contract length</div>
+        </div>
+        <div class="metric">
+        <div class="metric-top"><span class="metric-name" style="color:#38bdf8;">Volatility</span><span class="metric-level" style="color:#38bdf8;">LOW</span></div>
+        <div class="metric-track"><div class="metric-fill" style="width:22%;background:#38bdf8;"></div></div>
+        <div class="metric-desc">Terminal income is usually more stable because volumes matter more than freight rate swings.</div>
+    </div><div class="metric">
+        <div class="metric-top"><span class="metric-name" style="color:#60a5fa;">Risk</span><span class="metric-level" style="color:#60a5fa;">LOW</span></div>
+        <div class="metric-track"><div class="metric-fill" style="width:34%;background:#60a5fa;"></div></div>
+        <div class="metric-desc">The model is more predictable, though political, regulatory and concession risk still matter.</div>
+    </div><div class="metric">
+        <div class="metric-top"><span class="metric-name" style="color:#c084fc;">Potential</span><span class="metric-level" style="color:#c084fc;">MED</span></div>
+        <div class="metric-track"><div class="metric-fill" style="width:60%;background:#c084fc;"></div></div>
+        <div class="metric-desc">The upside is usually slower, but steady expansion, automation and long contracts can compound well.</div>
+    </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-<!-- ═══════════════════════════════ SLIDE 3: KEY OUTPUTS ═══════════════════════════════ -->
-<div class="slide" data-slide="3">
-    <div class="gradient-mesh">
-        <div class="blob" style="width:400px;height:400px;top:-100px;right:-90px;background:#0369a1;opacity:0.09;"></div>
-        <div class="blob" style="width:280px;height:280px;bottom:-80px;left:-60px;background:#4c1d95;opacity:0.07;"></div>
+<div class="slide" data-s="3">
+  <div class="mesh">
+    <div class="blob ba" style="width:340px;height:340px;top:-80px;left:-60px;background:#0369a1;opacity:0.13;"></div>
+    <div class="blob bb" style="width:280px;height:280px;bottom:-70px;right:-50px;background:#0c4a6e;opacity:0.10;"></div>
+  </div>
+  <div class="inner" style="display:grid;grid-template-columns:2fr 5fr;gap:3.5rem;align-items:center;">
+    <div>
+      <div class="reveal" style="width:3px;height:60px;background:linear-gradient(180deg,#38bdf8,transparent);margin-bottom:1.2rem;"></div>
+      <div class="reveal" style="font-size:0.7rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#334155;margin-bottom:0.9rem;">My view</div>
+      <p class="reveal" style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:#94a3b8;line-height:1.6;margin-bottom:1rem;">My experience has been across the maritime sector and the logistics chain, from ships to terminals and infrastructure.</p>
+      <p class="reveal" style="font-family:'Playfair Display',serif;font-size:1.05rem;font-weight:700;color:#e2e8f0;line-height:1.6;">That is why my view is transversal — and why this is not an easy choice.</p>
     </div>
-    <div class="content">
-        <div class="reveal" style="text-transform:uppercase;letter-spacing:0.12em;font-size:0.72rem;color:#0ea5e9;margin-bottom:0.4rem;">Investor Takeaway</div>
-        <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:700;margin-bottom:1.3rem;">Key Outputs: <span style="color:#38bdf8;">What the Numbers Tell Us</span></h2>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.1rem;margin-bottom:1.1rem;">
-
-            <div class="reveal" style="background:rgba(248,113,113,0.05);border:1px solid rgba(248,113,113,0.15);border-radius:14px;padding:1.3rem;">
-                <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#f87171;margin-bottom:0.7rem;display:flex;align-items:center;gap:0.4rem;">
-                    <span class="icon-flat sm"><svg viewBox="0 0 24 24" style="stroke:#f87171;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
-                    Ocean
-                </div>
-                <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#f1f5f9;margin-bottom:0.65rem;line-height:1.25;">More volume, less money.</h3>
-                <p style="font-size:0.82rem;color:#94a3b8;line-height:1.65;margin-bottom:0.9rem;">A 14% drop in freight rates, just USD 346 per FFE, erased nearly USD 1bn in EBIT. Volumes grew 9.3% and fleet utilisation hit 96%. None of it was enough. Shipping is a commodity business and when pricing power disappears, operational efficiency cannot compensate.</p>
-                <div style="border-top:1px solid rgba(248,113,113,0.12);padding-top:0.8rem;">
-                    <div style="font-size:1.7rem;font-weight:800;color:#f87171;line-height:1;">-USD 192m</div>
-                    <div style="font-size:0.65rem;color:#475569;margin-top:0.2rem;">EBIT · Largest revenue segment in the group</div>
-                </div>
-            </div>
-
-            <div class="reveal" style="background:rgba(74,222,128,0.04);border:1px solid rgba(74,222,128,0.13);border-radius:14px;padding:1.3rem;">
-                <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#4ade80;margin-bottom:0.7rem;display:flex;align-items:center;gap:0.4rem;">
-                    <span class="icon-flat sm"><svg viewBox="0 0 24 24" style="stroke:#4ade80;"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
-                    Logistics
-                </div>
-                <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#f1f5f9;margin-bottom:0.65rem;line-height:1.25;">Eight quarters, eight improvements.</h3>
-                <p style="font-size:0.82rem;color:#94a3b8;line-height:1.65;margin-bottom:0.9rem;">Consistent margin expansion for two full years running. Revenue up 8.7%, EBIT up 20%, air freight volumes surging 20%. Built on contracts and value-added services, not on spot rate exposure. The integration strategy is paying off steadily.</p>
-                <div style="border-top:1px solid rgba(74,222,128,0.12);padding-top:0.8rem;">
-                    <div style="font-size:1.7rem;font-weight:800;color:#4ade80;line-height:1;">4.6% margin</div>
-                    <div style="font-size:0.65rem;color:#475569;margin-top:0.2rem;">EBIT · 8th consecutive year-on-year improvement</div>
-                </div>
-            </div>
-
-            <div class="reveal" style="background:rgba(56,189,248,0.04);border:1px solid rgba(56,189,248,0.15);border-radius:14px;padding:1.3rem;">
-                <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#38bdf8;margin-bottom:0.7rem;display:flex;align-items:center;gap:0.4rem;">
-                    <span class="icon-flat sm"><svg viewBox="0 0 24 24" style="stroke:#38bdf8;"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></span>
-                    Terminals
-                </div>
-                <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:#f1f5f9;margin-bottom:0.65rem;line-height:1.25;">The toll road of the sea.</h3>
-                <p style="font-size:0.82rem;color:#94a3b8;line-height:1.65;margin-bottom:0.9rem;">Smallest revenue contributor, highest margin by a distance. Concession contracts, high barriers to entry and pricing power independent of the freight cycle. Revenue per move grew 2.2% even through geopolitical disruption. The asset does not move, and that is precisely why it compounds.</p>
-                <div style="border-top:1px solid rgba(56,189,248,0.12);padding-top:0.8rem;">
-                    <div style="font-size:1.7rem;font-weight:800;color:#38bdf8;line-height:1;">33.2% margin</div>
-                    <div style="font-size:0.65rem;color:#475569;margin-top:0.2rem;">EBIT · ROIC 15.7%</div>
-                </div>
-            </div>
-
+    <div>
+      <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.55rem,3vw,2.45rem);font-weight:900;line-height:1.12;margin-bottom:1.3rem;">It is a tough choice.<br>But I would still choose terminals.</h2>
+      <div class="reveal" style="padding:1.15rem 1.2rem;background:rgba(56,189,248,0.05);border-radius:14px;border-left:3px solid #38bdf8;margin-bottom:1rem;">
+        <p style="font-size:0.92rem;color:#cbd5e1;line-height:1.7;">All three verticals have good things and real risks. But if I had to put capital somewhere today, I would go for the terminal vertical: less volatility, lower risk and a business that is much harder to replicate quickly.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.9rem;">
+        <div class="reveal" style="padding:0.95rem 1rem;background:rgba(255,255,255,0.025);border-radius:12px;">
+          <div style="font-size:0.68rem;font-weight:700;color:#38bdf8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.35rem;">Why</div>
+          <p style="font-size:0.8rem;color:#64748b;line-height:1.55;">Returns are usually more stable and less exposed to freight market swings.</p>
         </div>
-
-        <div class="reveal" style="background:rgba(14,165,233,0.06);border:1px solid rgba(14,165,233,0.15);border-radius:11px;padding:0.9rem 1.3rem;display:flex;align-items:flex-start;gap:0.8rem;">
-            <span class="icon-flat sm" style="margin-top:1px;flex-shrink:0;"><svg viewBox="0 0 24 24" style="stroke:#38bdf8;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span>
-            <p style="font-size:0.82rem;color:#94a3b8;line-height:1.6;">Maersk full-year 2026 EBIT guidance spans from -USD 1.5bn to +USD 1.0bn. The entire range depends on a single variable, the reopening of the Red Sea and the Strait of Hormuz. The most integrated shipping group in the world has a USD 2.5bn outcome sensitivity tied to two straits staying open.</p>
+        <div class="reveal" style="padding:0.95rem 1rem;background:rgba(255,255,255,0.025);border-radius:12px;">
+          <div style="font-size:0.68rem;font-weight:700;color:#38bdf8;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.35rem;">Also</div>
+          <p style="font-size:0.8rem;color:#64748b;line-height:1.55;">A good terminal takes time, permits, capital and the right location. That matters.</p>
         </div>
-
-        <div style="margin-top:0.75rem;border-top:1px solid rgba(255,255,255,0.04);padding-top:0.55rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.3rem;">
-            <p style="font-size:0.6rem;color:#1e293b;">Source: A.P. Møller Mærsk Interim Report Q1 2026. For informational purposes only.</p>
-            <p style="font-size:0.6rem;color:#1e293b;">2026 · Javier Ramos Velasco</p>
-        </div>
+      </div>
+      <p class="reveal" style="font-size:0.75rem;color:#1e293b;margin-top:1rem;">Would you still choose Ocean, Logistics or Terminals?</p>
     </div>
+  </div>
 </div>
-
-</div><!-- /deck -->
-
-<div class="nav-controls">
-    <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
-    <div class="slide-dots" id="dots"></div>
-    <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
-    <span class="slide-counter" id="counter">1 / 3</span>
-</div>
-
+<div class="slide" data-s="4">
+  <div class="mesh">
+    <div class="blob ba" style="width:400px;height:400px;top:-100px;right:-80px;background:#0369a1;opacity:0.11;"></div>
+    <div class="blob bb" style="width:300px;height:300px;bottom:-80px;left:-50px;background:#1e3a5f;opacity:0.09;"></div>
+  </div>
+  <div class="inner">
+    <div class="reveal" style="font-size:0.7rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#334155;margin-bottom:0.4rem;">A.P. Møller Mærsk · Q1 2026</div>
+    <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:700;margin-bottom:1.3rem;">The market already gave its verdict. <span style="color:#38bdf8;">This quarter.</span></h2>
+    <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden;margin-bottom:1rem;">
+      <div style="background:#080c18;padding:1.4rem;">
+        <span class="tag tag-a" style="margin-bottom:1rem;display:inline-block;">A · Ocean</span>
+        <div style="font-size:3rem;font-weight:900;font-family:'Playfair Display',serif;color:#f87171;line-height:1;margin-bottom:0.3rem;">-USD 192m</div>
+        <div style="font-size:0.65rem;color:#334155;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;">EBIT</div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:0.75rem;color:#475569;">Revenue</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.8rem;font-weight:600;color:#e2e8f0;">USD 8.2bn</span><span class="dl dn">-9%</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:0.75rem;color:#475569;">Loaded Volume</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.8rem;font-weight:600;color:#e2e8f0;">3.7m FFE</span><span class="dl dp">+9.3%</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;"><span style="font-size:0.75rem;color:#475569;">Avg. Freight Rate</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.8rem;font-weight:600;color:#e2e8f0;">USD 2,081/FFE</span><span class="dl dn">-14%</span></div></div>
+        </div>
+        <div style="margin-top:1rem;padding:0.6rem 0.8rem;background:rgba(248,113,113,0.07);border-radius:8px;font-size:0.78rem;color:#94a3b8;line-height:1.5;">More volume than ever. Still a loss. Rates collapsed faster than efficiency could compensate.</div>
+      </div>
+      <div style="background:#070a12;padding:1.4rem;">
+        <span class="tag tag-b" style="margin-bottom:1rem;display:inline-block;">B · Logistics</span>
+        <div style="font-size:3rem;font-weight:900;font-family:'Playfair Display',serif;color:#4ade80;line-height:1;margin-bottom:0.3rem;">4.6%</div>
+        <div style="font-size:0.65rem;color:#334155;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;">EBIT Margin · 8th consecutive improvement</div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:0.75rem;color:#475569;">Revenue</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.8rem;font-weight:600;color:#e2e8f0;">USD 3.8bn</span><span class="dl dp">+8.7%</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:0.75rem;color:#475569;">EBIT</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.8rem;font-weight:600;color:#4ade80;">+USD 173m</span><span class="dl dp">+20%</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;"><span style="font-size:0.75rem;color:#475569;">Air Freight Vol.</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.8rem;font-weight:600;color:#e2e8f0;">82,000 t</span><span class="dl dp">+20%</span></div></div>
+        </div>
+        <div style="margin-top:1rem;padding:0.6rem 0.8rem;background:rgba(74,222,128,0.05);border-radius:8px;font-size:0.78rem;color:#94a3b8;line-height:1.5;">Two full years of uninterrupted improvement. The integration thesis is working — slowly but consistently.</div>
+      </div>
+      <div style="background:#080c18;padding:1.4rem;border-left:1px solid rgba(56,189,248,0.15);">
+        <span class="tag tag-c" style="margin-bottom:1rem;display:inline-block;">C · Terminals</span>
+        <div style="font-size:3rem;font-weight:900;font-family:'Playfair Display',serif;color:#38bdf8;line-height:1;margin-bottom:0.3rem;">33.2%</div>
+        <div style="font-size:0.65rem;color:#334155;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:1rem;">EBIT Margin · ROIC 15.7%</div>
+        <div style="display:flex;flex-direction:column;gap:0.5rem;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:0.75rem;color:#475569;">Revenue</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.8rem;font-weight:600;color:#e2e8f0;">USD 1.3bn</span><span class="dl dp">+6.7%</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);"><span style="font-size:0.75rem;color:#475569;">EBIT</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.8rem;font-weight:600;color:#38bdf8;">+USD 436m</span><span class="dl dp">+18%</span></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0;"><span style="font-size:0.75rem;color:#475569;">Revenue/Move</span><div style="display:flex;align-items:center;gap:0.4rem;"><span style="font-size:0.8rem;font-weight:600;color:#e2e8f0;">USD 417</span><span class="dl dp">+2.2%</span></div></div>
+        </div>
+        <div style="margin-top:1rem;padding:0.6rem 0.8rem;background:rgba(56,189,248,0.06);border-radius:8px;font-size:0.78rem;color:#94a3b8;line-height:1.5;">The smallest revenue line. The highest margin. Growing through geopolitical disruption. This is what a structural moat looks like in practice.</div>
+      </div>
+    </div>
+    <div class="reveal" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+      <p style="font-size:0.72rem;color:#1e293b;font-style:italic;">The Maersk paradox: Ocean runs at a loss — yet without it, Logistics has no cargo and Terminals has no traffic. The model only works when all three run together.</p>
+      <p style="font-size:0.6rem;color:#1e293b;">Source: A.P. Møller Mærsk Q1 2026 · Javier Ramos Velasco</p>
+    </div>
+  </div>
+</div></div>
+<div class="nav"><button class="nbtn" onclick="go(-1)">&#8249;</button><div class="dots" id="dots"></div><button class="nbtn" onclick="go(1)">&#8250;</button><span class="ncnt" id="cnt">1 / 4</span></div>
 <script>
-    let current = 1;
-    const total = document.querySelectorAll('.slide').length;
-    const dotsContainer = document.getElementById('dots');
-    const counter = document.getElementById('counter');
-    for (let i = 1; i <= total; i++) { const dot = document.createElement('div'); dot.className = 'dot' + (i === 1 ? ' active' : ''); dot.onclick = () => goToSlide(i); dotsContainer.appendChild(dot); }
-    function goToSlide(n) {
-        const prev = document.querySelector('.slide.active');
-        const next = document.querySelector(`.slide[data-slide="${n}"]`);
-        if (prev) prev.classList.remove('active');
-        if (next) { next.classList.add('active'); animateSlide(next); }
-        current = n; updateNav();
-    }
-    function changeSlide(dir) { let n = current + dir; if (n < 1) n = total; if (n > total) n = 1; goToSlide(n); }
-    function updateNav() { document.querySelectorAll('.dot').forEach((d,i) => d.classList.toggle('active', i+1===current)); counter.textContent = current + ' / ' + total; }
-    document.addEventListener('keydown', e => { if (e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1);} if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1);} });
-    let tx=0; document.addEventListener('touchstart',e=>tx=e.touches[0].clientX); document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)changeSlide(d>0?1:-1);});
-    function animateSlide(slide) {
-        slide.querySelectorAll('.reveal').forEach((el,i) => {
-            el.style.transition='none'; el.style.opacity='0'; el.style.transform='translateY(18px)'; el.offsetHeight;
-            el.style.transition=`opacity 0.32s ease ${i*0.07}s, transform 0.32s ease ${i*0.07}s`;
-            el.style.opacity='1'; el.style.transform='translateY(0)';
-        });
-    }
-    document.addEventListener('mousemove', e => {
-        const s = document.querySelector('.mouse-spotlight');
-        if(s) s.style.background=`radial-gradient(600px circle at ${e.clientX}px ${e.clientY}px,rgba(14,165,233,0.05),transparent 40%)`;
+var current = 1;
+var total = document.querySelectorAll('.slide').length;
+var dotsEl = document.getElementById('dots');
+var cntEl = document.getElementById('cnt');
+for (var i = 1; i <= total; i++) {
+  var d = document.createElement('div');
+  d.className = 'dot' + (i === 1 ? ' active' : '');
+  (function(n){ d.addEventListener('click', function(){ goTo(n); }); })(i);
+  dotsEl.appendChild(d);
+}
+function goTo(n) {
+  document.querySelector('.slide.active').classList.remove('active');
+  var next = document.querySelector('.slide[data-s="' + n + '"]');
+  next.classList.add('active');
+  animate(next);
+  current = n;
+  document.querySelectorAll('.dot').forEach(function(d,i){ d.classList.toggle('active', i+1===n); });
+  cntEl.textContent = n + ' / ' + total;
+}
+function go(dir){ var n=current+dir; if(n<1)n=total; if(n>total)n=1; goTo(n); }
+document.addEventListener('keydown', function(e){
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();go(1);} if(e.key==='ArrowLeft'){e.preventDefault();go(-1);}
+});
+var tx=0;
+document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX;});
+document.addEventListener('touchend',function(e){var d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)go(d>0?1:-1);});
+function animate(slide){
+  slide.querySelectorAll('.reveal').forEach(function(el,i){
+    el.style.transition='none'; el.style.opacity='0'; el.style.transform='translateY(16px)';
+    el.offsetHeight;
+    el.style.transition='opacity 0.35s ease '+(i*0.08)+'s, transform 0.35s ease '+(i*0.08)+'s';
+    el.style.opacity='1'; el.style.transform='translateY(0)';
+  });
+}
+document.addEventListener('mousemove', function(e){
+  var s=document.querySelector('.spotlight');
+  if(s) s.style.background='radial-gradient(550px circle at '+e.clientX+'px '+e.clientY+'px, rgba(14,165,233,0.05), transparent 38%)';
+});
+function initParticles(c){
+  if(!c) return;
+  c.width=window.innerWidth; c.height=window.innerHeight;
+  var ctx=c.getContext('2d'), mx=-1e4, my=-1e4, P=[];
+  for(var i=0;i<35;i++) P.push({x:Math.random()*c.width,y:Math.random()*c.height,vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,r:Math.random()*1.6+.5,a:Math.random()*.18+.05});
+  c.addEventListener('mousemove',function(e){var r=c.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;});
+  c.addEventListener('mouseleave',function(){mx=-1e4;my=-1e4;});
+  (function loop(){
+    ctx.clearRect(0,0,c.width,c.height);
+    P.forEach(function(p){
+      var dx=p.x-mx,dy=p.y-my,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<80){var f=(80-dist)/80;p.vx+=(dx/dist)*f*.07;p.vy+=(dy/dist)*f*.07;}
+      p.vx*=.98;p.vy*=.98;p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=c.width;if(p.x>c.width)p.x=0;if(p.y<0)p.y=c.height;if(p.y>c.height)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle='rgba(14,165,233,'+p.a+')';ctx.fill();
     });
-    window.initParticles = function(canvas, opts) {
-        if(!canvas) return;
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const ctx = canvas.getContext('2d');
-        const count = opts.count || 40;
-        let mx=-1000, my=-1000;
-        const particles = Array.from({length:count}, () => ({
-            x:Math.random()*canvas.width, y:Math.random()*canvas.height,
-            vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.25,
-            size:Math.random()*1.8+.6, alpha:Math.random()*.22+.06
-        }));
-        canvas.addEventListener('mousemove', e => { const r=canvas.getBoundingClientRect(); mx=e.clientX-r.left; my=e.clientY-r.top; });
-        canvas.addEventListener('mouseleave', () => { mx=-1000; my=-1000; });
-        (function loop(){
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-            particles.forEach(p => {
-                const dx=p.x-mx, dy=p.y-my, dist=Math.sqrt(dx*dx+dy*dy);
-                if(dist<90){const f=(90-dist)/90*1.2; p.vx+=(dx/dist)*f*.08; p.vy+=(dy/dist)*f*.08;}
-                p.vx*=.98; p.vy*=.98; p.x+=p.vx; p.y+=p.vy;
-                if(p.x<0)p.x=canvas.width; if(p.x>canvas.width)p.x=0;
-                if(p.y<0)p.y=canvas.height; if(p.y>canvas.height)p.y=0;
-                ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-                ctx.fillStyle=`rgba(14,165,233,${p.alpha})`; ctx.fill();
-            });
-            requestAnimationFrame(loop);
-        })();
-    };
-    document.querySelectorAll('.particle-canvas').forEach(c => window.initParticles(c, {count:40}));
-    try{ animateSlide(document.querySelector('.slide.active')); }catch(e){}
+    requestAnimationFrame(loop);
+  })();
+}
+document.querySelectorAll('.pcanvas').forEach(function(c){initParticles(c);});
+animate(document.querySelector('.slide.active'));
 </script>
 </body>
 </html>
