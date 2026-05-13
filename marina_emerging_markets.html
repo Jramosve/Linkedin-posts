@@ -12,84 +12,40 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-family:"DM Sans",sans-serif;color:var(--text)}
 .deck{width:100vw;height:100vh;position:relative}
-.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.97);transition:opacity .5s ease,transform .5s ease;pointer-events:none;overflow:hidden}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.97);transition:opacity .45s ease,transform .45s ease;pointer-events:none;overflow:hidden}
 .slide.active{opacity:1;transform:scale(1);pointer-events:all}
 .content{position:relative;z-index:2;width:100%;max-width:1100px;padding:clamp(1.4rem,3vw,2.8rem)}
 .reveal{opacity:0;transform:translateY(14px)}
 .blob{position:absolute;border-radius:50%;filter:blur(90px);animation:float-slow 14s ease-in-out infinite}
 @keyframes float-slow{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-35px)}}
 .nav-controls{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:200;background:rgba(255,255,255,.04);backdrop-filter:blur(12px);padding:8px 20px;border-radius:40px;border:1px solid rgba(255,255,255,.08)}
-.nav-btn{width:32px;height:32px;border:none;background:rgba(255,255,255,.06);color:var(--slate);border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
-.nav-btn:hover{background:rgba(14,165,233,.18)}
-.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);cursor:pointer;transition:all .3s}
-.dot.active{background:var(--slate);transform:scale(1.4)}
+.nav-btn{width:32px;height:32px;border:none;background:rgba(255,255,255,.06);color:var(--slate);border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);cursor:pointer;transition:all .3s}.dot.active{background:var(--slate);transform:scale(1.4)}
 .slide-counter{font-size:.68rem;color:var(--muted);min-width:32px;text-align:center}
 .author-tag{position:fixed;bottom:20px;right:26px;z-index:300;font-size:.63rem;font-weight:600;letter-spacing:.05em;color:rgba(148,163,184,.35);pointer-events:none}
 .label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
 .pill{font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:4px}
-.p-pos{background:rgba(74,222,128,.12);color:#4ade80}
-.p-neg{background:rgba(248,113,113,.12);color:#f87171}
-.p-neu{background:rgba(245,158,11,.12);color:#f59e0b}
-.p-blue{background:rgba(56,189,248,.12);color:#38bdf8}
-.kicker{display:inline-block;padding:.28rem .7rem;border-radius:999px;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.55rem}
-.kicker-green{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.18);color:#4ade80}
-.kicker-red{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.16);color:#f87171}
-.kicker-blue{background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.16);color:#38bdf8}
-.map-layout{display:grid;gap:.55rem;height:100vh;padding:1.3rem 1.55rem .9rem;width:100%;position:relative;z-index:2}
-.map-layout-global{grid-template-rows:auto 1fr auto auto}
-.map-layout-sea{grid-template-rows:auto 1fr auto}
-#map,#seaMap{width:100%;height:100%;border-radius:12px;border:1px solid rgba(255,255,255,.07);overflow:hidden}
-.leaflet-container{background:#060d1a!important;cursor:default!important}
-.leaflet-control-zoom,.leaflet-control-attribution{display:none!important}
-.leaflet-popup-content-wrapper{background:rgba(5,9,20,.97)!important;border:1px solid rgba(255,255,255,.09)!important;border-radius:10px!important;box-shadow:0 16px 48px rgba(0,0,0,.8)!important;backdrop-filter:blur(18px)}
-.leaflet-popup-tip-container{display:none!important}
-.leaflet-popup-content{margin:0!important;padding:0!important}
-.pi{padding:.85rem 1rem;min-width:220px}
-.pt{font-size:.8rem;font-weight:700;margin-bottom:.12rem}
-.ps{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:#1e3a5f;margin-bottom:.5rem}
-.pr{display:flex;justify-content:space-between;gap:1rem;padding:.2rem 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:.69rem}
-.pr:last-of-type{border:none}
-.pr span:first-child{color:#334155}
-.pr span:last-child{font-weight:600;color:#e2e8f0}
-.pp{display:inline-block;margin-top:.42rem;padding:2px 8px;border-radius:4px;font-size:.57rem;font-weight:700}
-@keyframes pring{0%{transform:translate(-50%,-50%) scale(1);opacity:.7}100%{transform:translate(-50%,-50%) scale(3.2);opacity:0}}
-.note-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}
-.note{padding:.75rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025)}
-.timeline{display:grid;grid-template-columns:190px repeat(12,1fr);gap:10px;align-items:center;margin-top:1.2rem}
-.month{font-size:.62rem;color:#334155;text-align:center;padding-bottom:.45rem}
-.market-label{font-size:.78rem;font-weight:700}
-.track{grid-column:2 / span 12;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:999px;height:28px;position:relative}
-.bar{position:absolute;top:4px;height:19px;border-radius:999px;font-size:.59rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 8px;white-space:nowrap}
-.sea-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:1.1rem;height:100%}
-.side-panels{display:grid;grid-template-rows:1fr 1fr .8fr;gap:.85rem;height:100%}
-.panel{padding:1.05rem 1.15rem;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.025));box-shadow:0 10px 30px rgba(0,0,0,.18)}
-.panel-green{border-color:rgba(74,222,128,.16);background:linear-gradient(180deg,rgba(74,222,128,.08),rgba(74,222,128,.03))}
-.panel-p{font-size:.94rem;line-height:1.55;color:#e2e8f0;margin-bottom:.7rem}
-.panel-p-lg{font-size:.98rem;line-height:1.5;color:#e2e8f0;margin-bottom:.35rem}
-.li{display:flex;gap:.6rem;align-items:flex-start;font-size:.8rem;color:#cbd5e1;line-height:1.55;margin-bottom:.5rem}
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
-.card{border-radius:14px;padding:1.1rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}
-.card-red{border-top:2px solid #f87171;background:rgba(248,113,113,.04)}
-.card-green{border-top:2px solid #4ade80;background:rgba(74,222,128,.04)}
-.mini{font-size:.78rem;line-height:1.55;color:#94a3b8}
-.split-list{display:flex;flex-direction:column;gap:.55rem;margin-top:.8rem}
-.item{padding:.7rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.025)}
-.item-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.18rem}
-.map-footer{display:flex;justify-content:space-between;align-items:center;padding-top:.32rem;border-top:1px solid rgba(255,255,255,.04)}
+.p-pos{background:rgba(74,222,128,.12);color:#4ade80}.p-neg{background:rgba(248,113,113,.12);color:#f87171}.p-neu{background:rgba(245,158,11,.12);color:#f59e0b}.p-blue{background:rgba(56,189,248,.12);color:#38bdf8}
+.kicker{display:inline-block;padding:.28rem .7rem;border-radius:999px;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.55rem}.kicker-green{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.18);color:#4ade80}.kicker-red{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.16);color:#f87171}
+.map-layout{display:grid;gap:.55rem;height:100vh;padding:1.3rem 1.55rem .9rem;width:100%;position:relative;z-index:2}.map-layout-global{grid-template-rows:auto 1fr auto auto}.map-layout-sea{grid-template-rows:auto 1fr auto}
+#map,#seaMap{width:100%;height:100%;border-radius:12px;border:1px solid rgba(255,255,255,.07);overflow:hidden}.leaflet-container{background:#060d1a!important;cursor:default!important}.leaflet-control-zoom,.leaflet-control-attribution{display:none!important}
+.note-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}.note{padding:.75rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025)}
+.timeline{display:grid;grid-template-columns:190px repeat(12,1fr);gap:10px;align-items:center;margin-top:1.2rem}.month{font-size:.62rem;color:#334155;text-align:center;padding-bottom:.45rem}.market-label{font-size:.78rem;font-weight:700}.track{grid-column:2 / span 12;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:999px;height:28px;position:relative}.bar{position:absolute;top:4px;height:19px;border-radius:999px;font-size:.59rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 8px;white-space:nowrap}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}.card{border-radius:14px;padding:1.1rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)}.card-red{border-top:2px solid #f87171;background:rgba(248,113,113,.04)}.card-green{border-top:2px solid #4ade80;background:rgba(74,222,128,.04)}.mini{font-size:.78rem;line-height:1.55;color:#94a3b8}
+.sea-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:1.1rem;height:100%}.side-panels{display:grid;grid-template-rows:1fr 1fr .8fr;gap:.85rem;height:100%}.panel{padding:1.05rem 1.15rem;border-radius:14px;border:1px solid rgba(255,255,255,.08);background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.025));box-shadow:0 10px 30px rgba(0,0,0,.18)}.panel-green{border-color:rgba(74,222,128,.16);background:linear-gradient(180deg,rgba(74,222,128,.08),rgba(74,222,128,.03))}.panel-p{font-size:.94rem;line-height:1.55;color:#e2e8f0;margin-bottom:.7rem}.panel-p-lg{font-size:.98rem;line-height:1.5;color:#e2e8f0;margin-bottom:.35rem}.li{display:flex;gap:.6rem;align-items:flex-start;font-size:.8rem;color:#cbd5e1;line-height:1.55;margin-bottom:.5rem}.map-footer{display:flex;justify-content:space-between;align-items:center;padding-top:.32rem;border-top:1px solid rgba(255,255,255,.04)}
 </style>
 </head>
 <body>
 <div class="author-tag">Javier Ramos Velasco · José María Serraclara</div>
 <div class="deck">
 
-<!-- SLIDE 1: COVER -->
 <div class="slide active" data-slide="1">
   <div class="blob" style="width:500px;height:500px;top:-120px;right:-100px;background:#0369a1;opacity:.13"></div>
   <div class="blob" style="width:300px;height:300px;bottom:-80px;left:-60px;background:#1e3a5f;opacity:.1;animation-delay:4s"></div>
   <div class="content" style="text-align:center">
     <div class="reveal" style="display:inline-block;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);border-radius:40px;padding:.28rem 1.1rem;font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:#f59e0b;margin-bottom:1.4rem">Marina Investment Report · 2026</div>
     <h1 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,4rem);font-weight:900;line-height:1.1;margin-bottom:1rem">Marina Investment in<br><span style="color:#38bdf8">Emerging Markets</span></h1>
-    <p class="reveal" style="font-size:clamp(.85rem,1.3vw,1rem);color:#94a3b8;max-width:620px;margin:0 auto 2rem;line-height:1.7">A structural analysis of where berth supply is collapsing, where capital is moving, and which emerging markets are positioned to capture the next wave of superyacht investment.</p>
+    <p class="reveal" style="font-size:clamp(.85rem,1.25vw,1rem);color:#94a3b8;max-width:720px;margin:0 auto 2rem;line-height:1.7">The global superyacht fleet adds roughly 171 new yachts per year, while Mediterranean berth supply grows at under 1% annually. That gap is forcing demand beyond traditional hubs — and creating a case for new marina development in emerging markets.</p>
     <div class="reveal" style="display:flex;justify-content:center;gap:2.5rem;margin-bottom:2rem;flex-wrap:wrap">
       <div style="text-align:center"><div style="font-size:1.5rem;font-weight:800">USD 19bn</div><div class="label" style="color:var(--muted);margin-top:.1rem">Global marina market 2025</div></div>
       <div style="width:1px;background:rgba(255,255,255,.08)"></div>
@@ -101,12 +57,11 @@ html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-fam
   </div>
 </div>
 
-<!-- SLIDE 2: GLOBAL MAP -->
 <div class="slide" data-slide="2" style="padding:0;align-items:stretch">
   <div class="map-layout map-layout-global">
     <div>
       <div class="label" style="color:var(--muted);margin-bottom:.18rem">Global Market Landscape · Marina Investment 2026</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.1rem,2.2vw,1.65rem);font-weight:700;line-height:1.15">Where Superyachts Go. <span style="color:#38bdf8">And Where They Cannot Fit.</span></h2>
+      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.1rem,2.2vw,1.65rem);font-weight:700;line-height:1.15">Where Superyachts Go. <span style="color:#38bdf8">Leading &amp; Emerging Markets.</span></h2>
     </div>
     <div id="map"></div>
     <div class="note-grid">
@@ -116,207 +71,110 @@ html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-fam
       <div class="note"><div class="label" style="color:#4ade80;margin-bottom:.2rem">Southeast Asia</div><div style="font-size:.73rem;color:#94a3b8">Tourism demand is proven. Marina infrastructure is still early-stage.</div></div>
       <div class="note"><div class="label" style="color:#a78bfa;margin-bottom:.2rem">Other Emerging</div><div style="font-size:.73rem;color:#94a3b8">East Med and Maldives are real but lower-upside plays.</div></div>
     </div>
-    <div class="map-footer">
-      <span style="font-size:.63rem;font-weight:600;color:rgba(56,189,248,.4);letter-spacing:.06em">Javier Ramos Velasco · José María Serraclara</span>
-      <span style="font-size:.55rem;color:#1e293b">Sources: Gulf Superyacht Report 2024–2025 · The Superyacht Agency · Marina World</span>
-    </div>
+    <div class="map-footer"><span style="font-size:.63rem;font-weight:600;color:rgba(56,189,248,.4);letter-spacing:.06em">Javier Ramos Velasco · José María Serraclara</span><span style="font-size:.55rem;color:#1e293b">Sources: Gulf Superyacht Report 2024–2025 · Ocean Marina Jomtien · market sources</span></div>
   </div>
 </div>
 
-<!-- SLIDE 3: SEASONALITY TIMELINE -->
 <div class="slide" data-slide="3">
   <div class="blob" style="width:340px;height:340px;top:-70px;right:-80px;background:#1e3a5f;opacity:.1"></div>
   <div class="content">
     <div class="reveal label" style="color:var(--muted);margin-bottom:.3rem">Seasonality</div>
-    <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.45rem,2.8vw,2rem);font-weight:700;margin-bottom:.4rem">The same yachts rotate. <span style="color:#38bdf8">The calendar explains the capital.</span></h2>
-    <p class="reveal" style="font-size:.84rem;color:#94a3b8;line-height:1.65;max-width:780px;margin-bottom:.2rem">Traditional and emerging marina markets do not all compete at the same time. Some complement each other — others fight for the same winter owner wallet.</p>
+    <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.45rem,2.8vw,2rem);font-weight:700;margin-bottom:.4rem">The same yachts rotate. <span style="color:#38bdf8">Every market has a season led by the Mediterranenan and the Caribbean.</span></h2>
+    <p class="reveal" style="font-size:.84rem;color:#94a3b8;line-height:1.65;max-width:780px;margin-bottom:.2rem">Traditional and emerging marina markets do not all compete at the same time. Some complement each other, others fight for the same winter owner wallet.</p>
     <div class="timeline reveal">
       <div></div>
       <div class="month">Jan</div><div class="month">Feb</div><div class="month">Mar</div><div class="month">Apr</div><div class="month">May</div><div class="month">Jun</div><div class="month">Jul</div><div class="month">Aug</div><div class="month">Sep</div><div class="month">Oct</div><div class="month">Nov</div><div class="month">Dec</div>
-      <div class="market-label" style="color:#f59e0b">Mediterranean</div>
-      <div class="track"><div class="bar" style="left:33.3%;width:50%;background:rgba(245,158,11,.2);color:#fbbf24;border:1px solid rgba(245,158,11,.3)">Apr – Oct · PEAK Jul–Aug</div></div>
-      <div class="market-label" style="color:#fbbf24">Caribbean</div>
-      <div class="track">
-        <div class="bar" style="left:0%;width:33.3%;background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.2)">Jan – Apr</div>
-        <div class="bar" style="left:83.3%;width:16.7%;background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.2)">Nov–Dec</div>
-      </div>
-      <div class="market-label" style="color:#f87171">GCC</div>
-      <div class="track">
-        <div class="bar" style="left:0%;width:33.3%;background:rgba(248,113,113,.18);color:#f87171;border:1px solid rgba(248,113,113,.28)">Jan – Apr</div>
-        <div class="bar" style="left:75%;width:25%;background:rgba(248,113,113,.18);color:#f87171;border:1px solid rgba(248,113,113,.28)">Oct – Dec</div>
-      </div>
-      <div class="market-label" style="color:#4ade80">Southeast Asia</div>
-      <div class="track">
-        <div class="bar" style="left:0%;width:33.3%;background:rgba(74,222,128,.18);color:#4ade80;border:1px solid rgba(74,222,128,.28)">Jan – Apr</div>
-        <div class="bar" style="left:83.3%;width:16.7%;background:rgba(74,222,128,.18);color:#4ade80;border:1px solid rgba(74,222,128,.28)">Nov–Dec</div>
-      </div>
-      <div class="market-label" style="color:#a78bfa">Other · Emerging</div>
-      <div class="track"><div class="bar" style="left:0%;width:100%;background:rgba(167,139,250,.1);color:#c4b5fd;border:1px solid rgba(167,139,250,.18)">Variable / niche windows</div></div>
+      <div class="market-label" style="color:#f59e0b">Mediterranean</div><div class="track"><div class="bar" style="left:33.3%;width:50%;background:rgba(245,158,11,.2);color:#fbbf24;border:1px solid rgba(245,158,11,.3)">Apr – Oct · PEAK Jul–Aug</div></div>
+      <div class="market-label" style="color:#fbbf24">Caribbean</div><div class="track"><div class="bar" style="left:0%;width:33.3%;background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.2)">Jan – Apr</div><div class="bar" style="left:83.3%;width:16.7%;background:rgba(245,158,11,.12);color:#fbbf24;border:1px solid rgba(245,158,11,.2)">Nov–Dec</div></div>
+      <div class="market-label" style="color:#f87171">GCC</div><div class="track"><div class="bar" style="left:0%;width:33.3%;background:rgba(248,113,113,.18);color:#f87171;border:1px solid rgba(248,113,113,.28)">Jan – Apr</div><div class="bar" style="left:75%;width:25%;background:rgba(248,113,113,.18);color:#f87171;border:1px solid rgba(248,113,113,.28)">Oct – Dec</div></div>
+      <div class="market-label" style="color:#4ade80">Southeast Asia</div><div class="track"><div class="bar" style="left:0%;width:33.3%;background:rgba(74,222,128,.18);color:#4ade80;border:1px solid rgba(74,222,128,.28)">Jan – Apr</div><div class="bar" style="left:83.3%;width:16.7%;background:rgba(74,222,128,.18);color:#4ade80;border:1px solid rgba(74,222,128,.28)">Nov–Dec</div></div>
+      <div class="market-label" style="color:#a78bfa">Other · Emerging</div><div class="track"><div class="bar" style="left:0%;width:100%;background:rgba(167,139,250,.1);color:#c4b5fd;border:1px solid rgba(167,139,250,.18)">Variable / niche windows</div></div>
     </div>
     <div class="note-grid" style="margin-top:1rem">
       <div class="note"><div class="label" style="color:#f59e0b;margin-bottom:.2rem">Med</div><div style="font-size:.73rem;color:#94a3b8">Summer winner, but structurally full.</div></div>
       <div class="note"><div class="label" style="color:#fbbf24;margin-bottom:.2rem">Caribbean</div><div style="font-size:.73rem;color:#94a3b8">Best seasonal complement to the Med.</div></div>
       <div class="note"><div class="label" style="color:#f87171;margin-bottom:.2rem">GCC</div><div style="font-size:.73rem;color:#94a3b8">Same winter window. Geopolitical risk now a factor.</div></div>
       <div class="note"><div class="label" style="color:#4ade80;margin-bottom:.2rem">SEA</div><div style="font-size:.73rem;color:#94a3b8">Competes for the same winter demand, with far less supply.</div></div>
-      <div class="note"><div class="label" style="color:#a78bfa;margin-bottom:.2rem">Emerging</div><div style="font-size:.73rem;color:#94a3b8">Useful watchlist — not the core thesis.</div></div>
+      <div class="note"><div class="label" style="color:#a78bfa;margin-bottom:.2rem">Emerging</div><div style="font-size:.73rem;color:#94a3b8">Useful watchlist, with nitch markets.</div></div>
     </div>
   </div>
 </div>
 
-<!-- SLIDE 4: CAPITAL ROTATION -->
 <div class="slide" data-slide="4">
   <div class="blob" style="width:340px;height:340px;top:-70px;right:-80px;background:#0369a1;opacity:.1"></div>
   <div class="content">
     <div class="reveal label" style="color:var(--muted);margin-bottom:.3rem">Capital Rotation</div>
     <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.4rem,2.8vw,2rem);font-weight:700;margin-bottom:1rem">GCC stalls. <span style="color:#38bdf8">Capital rotates to where seasonality remains but risk falls.</span></h2>
     <div class="two-col">
-
-      <!-- LEFT: GCC -->
       <div class="card card-red" style="display:flex;flex-direction:column;gap:1rem">
         <div>
           <div class="kicker kicker-red reveal" style="margin-bottom:.7rem">GCC · The disrupted frontrunner</div>
-          <div class="reveal" style="font-size:3.8rem;font-weight:900;font-family:'Playfair Display',serif;color:#f87171;line-height:1">321</div>
+          <div class="reveal" style="font-size:3.7rem;font-weight:900;font-family:'Playfair Display',serif;color:#f87171;line-height:1">321</div>
           <div class="reveal" style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#334155;margin-bottom:.35rem">Superyachts 30m+ in the region · 5.1% of global fleet</div>
-          <p class="reveal" style="font-size:.86rem;color:#e2e8f0;line-height:1.55;font-style:italic">"The GCC had the capital, the market and the ambition."</p>
+          <p class="reveal" style="font-size:.86rem;color:#e2e8f0;line-height:1.55;font-style:italic">The GCC had the capital, the market and the ambition.</p>
         </div>
         <div style="display:flex;flex-direction:column;gap:.6rem" class="reveal">
-          <div style="padding:.75rem .9rem;border-radius:10px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem">
-              <span style="font-size:.74rem;font-weight:700;color:#f87171">Hormuz risk</span>
-              <span class="pill p-neg">Insurance +60%</span>
-            </div>
-            <div class="mini">US airstrikes and Hormuz closure threat repriced maritime insurance overnight. Owners hesitate before leisure commitments.</div>
-          </div>
-          <div style="padding:.75rem .9rem;border-radius:10px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem">
-              <span style="font-size:.74rem;font-weight:700;color:#f87171">Investment pipeline</span>
-              <span class="pill p-neg">Contracts –40% YoY</span>
-            </div>
-            <div class="mini">The capital commitment was real — USD 150m+ in Oman alone. But the pipeline has slowed materially since mid-2025.</div>
-          </div>
-          <div style="padding:.6rem .9rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)">
-            <div class="mini" style="color:#64748b">Hormuz risk does not kill the thesis. It delays it — and redirects capital in the interim.</div>
-          </div>
+          <div style="padding:.75rem .9rem;border-radius:10px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem"><span style="font-size:.74rem;font-weight:700;color:#f87171">Hormuz risk</span><span class="pill p-neg">Insurance +60%</span></div><div class="mini">Route uncertainty and insurance spikes are now reshaping the leisure investment case.</div></div>
+          <div style="padding:.75rem .9rem;border-radius:10px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem"><span style="font-size:.74rem;font-weight:700;color:#f87171">Investment pipeline</span><span class="pill p-neg">Contracts –40% YoY</span></div><div class="mini">The project pipeline remains real, but current geopolitical risk is delaying deployment.</div></div>
+          <div style="padding:.6rem .9rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)"><div class="mini" style="color:#64748b">Hormuz risk does not kill the thesis. It delays it, and redirects capital in the interim, openning the window for other markets.</div></div>
         </div>
       </div>
-
-      <!-- RIGHT: ALTERNATIVES -->
       <div class="card card-green" style="display:flex;flex-direction:column;gap:1rem">
-        <div>
-          <div class="kicker kicker-green reveal" style="margin-bottom:.7rem">Where the capital goes next</div>
-          <p class="reveal" style="font-size:.86rem;color:#e2e8f0;line-height:1.55">Same seasonal window as the GCC. Lower geopolitical friction. The three markets below are the most logical receptors.</p>
-        </div>
+        <div><div class="kicker kicker-green reveal" style="margin-bottom:.7rem">Where the capital goes next</div><p class="reveal" style="font-size:.86rem;color:#e2e8f0;line-height:1.55">Same seasonal window as the GCC. Lower geopolitical friction. The three markets below are the most logical receptors.</p></div>
         <div style="display:flex;flex-direction:column;gap:.65rem" class="reveal">
-          <div style="padding:.85rem .95rem;border-radius:12px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.2)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">
-              <span style="font-size:.88rem;font-weight:700;color:#4ade80">Southeast Asia</span>
-              <span class="pill p-pos">Highest upside</span>
-            </div>
-            <div style="display:flex;gap:.3rem;margin-bottom:.3rem">
-              <div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div>
-            </div>
-            <div class="mini">Winter overlap · proven tourism demand · under 2,000 quality berths in Thailand · first mover window intact.</div>
-          </div>
-          <div style="padding:.85rem .95rem;border-radius:12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.18)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">
-              <span style="font-size:.88rem;font-weight:700;color:#f59e0b">East Mediterranean</span>
-              <span class="pill p-neu">Medium upside</span>
-            </div>
-            <div style="display:flex;gap:.3rem;margin-bottom:.3rem">
-              <div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div>
-            </div>
-            <div class="mini">Inside the Med ecosystem · Greece, Turkey, Cyprus · operationally safe but less asymmetric.</div>
-          </div>
-          <div style="padding:.85rem .95rem;border-radius:12px;background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.18)">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">
-              <span style="font-size:.88rem;font-weight:700;color:#a78bfa">Maldives · Indian Ocean</span>
-              <span class="pill p-blue">Specialist</span>
-            </div>
-            <div style="display:flex;gap:.3rem;margin-bottom:.3rem">
-              <div style="flex:1;height:4px;border-radius:2px;background:#a78bfa;opacity:.9"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:#a78bfa;opacity:.9"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div>
-              <div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div>
-            </div>
-            <div class="mini">Ultra-premium demand · real infrastructure gap · high regulatory complexity · niche operators only.</div>
-          </div>
+          <div style="padding:.85rem .95rem;border-radius:12px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.2)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem"><span style="font-size:.88rem;font-weight:700;color:#4ade80">Southeast Asia</span><span class="pill p-pos">Highest upside</span></div><div style="display:flex;gap:.3rem;margin-bottom:.3rem"><div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div></div><div class="mini">Winter overlap · proven tourism demand · thin berth base · first mover window intact.</div></div>
+          <div style="padding:.85rem .95rem;border-radius:12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.18)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem"><span style="font-size:.88rem;font-weight:700;color:#f59e0b">East Mediterranean</span><span class="pill p-neu">Medium upside</span></div><div style="display:flex;gap:.3rem;margin-bottom:.3rem"><div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div></div><div class="mini">Inside the Med ecosystem, safer operationally, but less asymmetric in upside.</div></div>
+          <div style="padding:.85rem .95rem;border-radius:12px;background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.18)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem"><span style="font-size:.88rem;font-weight:700;color:#a78bfa">Maldives · Indian Ocean</span><span class="pill p-blue">Specialist</span></div><div style="display:flex;gap:.3rem;margin-bottom:.3rem"><div style="flex:1;height:4px;border-radius:2px;background:#a78bfa;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#a78bfa;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div></div><div class="mini">Ultra-premium demand · real infrastructure gap · high regulatory complexity.</div></div>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<!-- SLIDE 5: SOUTHEAST ASIA MAP + PANELS -->
 <div class="slide" data-slide="5" style="padding:0;align-items:stretch">
   <div class="map-layout map-layout-sea">
     <div>
       <div class="label" style="color:var(--muted);margin-bottom:.18rem">Southeast Asia · Regional Detail</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.18rem,2.3vw,1.78rem);font-weight:700;line-height:1.12;margin-bottom:.25rem">
-        Existing marinas, future projects, and the real trade-off.
-        <span style="color:#4ade80">Opportunity vs execution.</span>
-      </h2>
-      <p style="font-size:.84rem;color:#94a3b8;line-height:1.5;max-width:780px">One of the world's top aviation destinations — 140m air passengers in 2024 — and still one of the most underdeveloped marina markets on the planet.</p>
+      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.18rem,2.3vw,1.78rem);font-weight:700;line-height:1.12;margin-bottom:.25rem">Existing marinas, future projects, and the real trade-off. <span style="color:#4ade80">Opportunity vs execution.</span></h2>
+      <p style="font-size:.84rem;color:#94a3b8;line-height:1.5;max-width:780px">One of the world’s leading tourism regions still has a surprisingly thin marina base. That mismatch is what makes the investment case interesting.</p>
     </div>
     <div class="sea-grid">
       <div id="seaMap"></div>
       <div class="side-panels">
         <div class="panel">
           <div class="kicker kicker-green">Demand first</div>
-          <p class="panel-p">Southeast Asia is already a top-tier global tourism destination. The marine infrastructure has not kept pace with that demand, and that gap is the investment thesis.</p>
-          <div class="li"><span style="color:#4ade80;flex-shrink:0">✓</span><span>Thailand's operating capacity includes Ocean Marina Jomtien with 455 berths and yachts up to 75m — but nationally fewer than 2,000 quality berths exist.</span></div>
-          <div class="li"><span style="color:#4ade80;flex-shrink:0">✓</span><span>The Nov–Apr season mirrors the winter migration of high-end yachting demand away from the Med and GCC.</span></div>
+          <p class="panel-p">Southeast Asia is already a top-tier global tourism destination, but marine infrastructure still lags behind that demand. That is the investment gap.</p>
+          <div class="li"><span style="color:#4ade80;flex-shrink:0">✓</span><span>Thailand already has operating capacity, including Ocean Marina Jomtien with 455 berths and yachts up to 75m.</span></div>
+          <div class="li"><span style="color:#4ade80;flex-shrink:0">✓</span><span>The Nov–Apr seasonal window mirrors the winter migration of high-end yachting demand.</span></div>
         </div>
         <div class="panel">
           <div class="kicker kicker-red">Execution gap</div>
-          <p class="panel-p">The opportunity is real, but the ecosystem is still incomplete. This is a development story, not a finished marina market — and it will require patience.</p>
-          <div class="li"><span style="color:#f87171;flex-shrink:0">△</span><span>Berth depth, navigational charts and coastal site selection are real technical constraints in several areas.</span></div>
-          <div class="li"><span style="color:#f87171;flex-shrink:0">△</span><span>Permitting and foreign ownership structures often require local partnerships and patient capital.</span></div>
+          <p class="panel-p">The opportunity is real, but the ecosystem is still incomplete. This is a development story, not a finished marina market.</p>
+          <div class="li"><span style="color:#f87171;flex-shrink:0">△</span><span>Berth depth, charts and coastal site selection remain real technical constraints.</span></div>
+          <div class="li"><span style="color:#f87171;flex-shrink:0">△</span><span>Permitting and ownership structures often require local partners and patient capital.</span></div>
         </div>
         <div class="panel panel-green">
           <div class="kicker kicker-green">Investment read</div>
-          <p class="panel-p-lg">This is not the safest marina market. It may be one of the most asymmetric.</p>
-          <div style="font-size:.82rem;line-height:1.56;color:#cbd5e1">Demand is visible, competition is still limited, and the build-out runway is long. That is the point.</div>
+          <p class="panel-p-lg">This is not the safest marina market. But the demand is already there, you are not building it from scratch.</p>
+          <div style="font-size:.82rem;line-height:1.56;color:#cbd5e1">Emerging market risk. Proven tourism base. That combination is rare and that is exactly the point.</div>
         </div>
       </div>
     </div>
-    <div class="map-footer">
-      <span style="font-size:.63rem;font-weight:600;color:rgba(56,189,248,.4);letter-spacing:.06em">Javier Ramos Velasco · José María Serraclara</span>
-      <span style="font-size:.55rem;color:#1e293b">Sources: Ocean Marina Jomtien · Royal Phuket Marina · Nation Thailand 2026 · Asia Pacific Boating</span>
-    </div>
+    <div class="map-footer"><span style="font-size:.63rem;font-weight:600;color:rgba(56,189,248,.4);letter-spacing:.06em">Javier Ramos Velasco · José María Serraclara</span><span style="font-size:.55rem;color:#1e293b">Sources: Ocean Marina Jomtien · Royal Phuket Marina · regional development announcements</span></div>
   </div>
 </div>
 
 </div>
-<div class="nav-controls">
-  <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
-  <div style="display:flex;gap:8px" id="dots"></div>
-  <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
-  <span class="slide-counter" id="counter">1 / 5</span>
-</div>
+<div class="nav-controls"><button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button><div style="display:flex;gap:8px" id="dots"></div><button class="nav-btn" onclick="changeSlide(1)">&#8250;</button><span class="slide-counter" id="counter">1 / 5</span></div>
 <script>
-let cur=1;const tot=document.querySelectorAll('.slide').length,dc=document.getElementById('dots'),ct=document.getElementById('counter');
-for(let i=1;i<=tot;i++){const d=document.createElement('div');d.className='dot'+(i===1?' active':'');d.onclick=()=>go(i);dc.appendChild(d)}
+let cur=1;const slides=document.querySelectorAll('.slide');const tot=slides.length;const dc=document.getElementById('dots');const ct=document.getElementById('counter');for(let i=1;i<=tot;i++){const d=document.createElement('div');d.className='dot'+(i===1?' active':'');d.onclick=()=>go(i);dc.appendChild(d)}
 function go(n){document.querySelector('.slide.active').classList.remove('active');document.querySelector('.slide[data-slide="'+n+'"]').classList.add('active');cur=n;document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===cur));ct.textContent=cur+' / '+tot;anim(document.querySelector('.slide.active'));if(n===2&&!window._m1)initMap();if(n===5&&!window._m2)initSeaMap()}
 function changeSlide(d){let n=cur+d;if(n<1)n=tot;if(n>tot)n=1;go(n)}
-document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1)}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1)}});
-let tx=0;document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)changeSlide(d>0?1:-1)});
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1)}if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1)}});let tx=0;document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)changeSlide(d>0?1:-1)});
 function anim(slide){slide.querySelectorAll('.reveal').forEach((el,i)=>{el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(14px)';el.offsetHeight;el.style.transition='opacity .32s ease '+(i*.07)+'s,transform .32s ease '+(i*.07)+'s';el.style.opacity='1';el.style.transform='translateY(0)'})}
 anim(document.querySelector('.slide.active'));
-function pm(map,ll,color,size){const s=size,s2=s*2;return L.marker(ll,{icon:L.divIcon({className:'',iconSize:[s2,s2],iconAnchor:[s,s],html:'<div style="position:relative;width:'+s2+'px;height:'+s2+'px"><div style="position:absolute;top:50%;left:50%;width:'+s+'px;height:'+s+'px;border-radius:50%;background:'+color+';opacity:.18;transform:translate(-50%,-50%);animation:pring 2.2s ease-out infinite"></div><div style="position:absolute;top:50%;left:50%;width:'+(s*.62)+'px;height:'+(s*.62)+'px;border-radius:50%;background:'+color+';border:2px solid rgba(255,255,255,.2);transform:translate(-50%,-50%);box-shadow:0 0 '+(s*.8)+'px '+color+'55"></div></div>'})}).addTo(map)}
-function pop(t,s,rows,pill,color){return'<div class="pi"><div class="pt" style="color:'+color+'">'+t+'</div><div class="ps">'+s+'</div>'+rows.map(r=>'<div class="pr"><span>'+r[0]+'</span><span>'+r[1]+'</span></div>').join('')+'<div><span class="pp" style="background:'+color+'22;color:'+color+'">'+pill+'</span></div></div>'}
-const po={maxWidth:255,autoPanPadding:[16,16]};
-function initMap(){window._m1=true;const map=L.map('map',{center:[20,35],zoom:2,zoomControl:false,attributionControl:false,dragging:false,touchZoom:false,doubleClickZoom:false,scrollWheelZoom:false,boxZoom:false,keyboard:false});L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:8}).addTo(map);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:8,opacity:.4}).addTo(map);const zs=c=>({color:c,weight:1.5,opacity:.7,fillColor:c,fillOpacity:.13,dashArray:'5 5'});L.polygon([[30,-6],[30,36],[42,36],[46,18],[44,8],[38,-6]],zs('#f59e0b')).addTo(map);L.polygon([[9,-85],[9,-60],[24,-60],[26,-75],[22,-88],[14,-90]],zs('#f59e0b')).addTo(map);L.polygon([[12,40],[12,60],[26,60],[30,50],[28,38],[20,38]],zs('#f87171')).addTo(map);L.polygon([[0,98],[0,122],[22,122],[24,100],[16,96],[5,96]],zs('#4ade80')).addTo(map);L.polygon([[-5,68],[-5,80],[8,80],[8,68]],{color:'#a78bfa',weight:1,opacity:.45,fillColor:'#a78bfa',fillOpacity:.09,dashArray:'3 5'}).addTo(map);L.polygon([[30,22],[30,36],[42,36],[42,22]],{color:'#a78bfa',weight:1,opacity:.35,fillColor:'#a78bfa',fillOpacity:.06,dashArray:'3 5'}).addTo(map);pm(map,[37,13],'#f59e0b',18).bindPopup(pop('Mediterranean','TRADITIONAL · SATURATED',[['Berths 24m+','4,500–4,800'],['Fleet at peak','5,000+ yachts'],['Supply growth/yr','< 1%'],['Season','Jul–Aug peak · Apr–Oct']],'STRUCTURALLY UNDERSUPPLIED','#f59e0b'),po);pm(map,[15.5,-66],'#f59e0b',14).bindPopup(pop('Caribbean','TRADITIONAL · CONSOLIDATING',[['Key hubs','Antigua · BVI · St Martin'],['Season','Nov–Apr · peak Dec–Mar'],['Investment trend','M&A consolidation'],['New berths','Minimal']],'MATURING MARKET','#f59e0b'),po);pm(map,[25.2,55.3],'#f87171',18).bindPopup(pop('UAE · Dubai & Abu Dhabi','GCC · DISRUPTED FRONTRUNNER',[['Superyachts 30m+','321 · 5.1% global'],['Season','Oct–Apr · peak Dec–Mar'],['Insurance surge','+60%'],['Investment mood','Risk repriced']],'GEOPOLITICAL RISK','#f87171'),po);pm(map,[22.5,59.5],'#f87171',11).bindPopup(pop('Oman','GCC · ACTIVE PIPELINE',[['Salalah marina','USD 104m · NMDC 2025'],['Quriyat marina','Tender open 2025'],['Total pipeline','USD 150m+']],'ACTIVE DESPITE HEADWINDS','#f87171'),po);pm(map,[7.9,98.3],'#4ade80',18).bindPopup(pop('Thailand · Phuket','SOUTHEAST ASIA · FRONTIER',[['Quality berths nationally','< 2,000'],['Intl. visitors 2024','35 million'],['Season','Nov–Apr · peak Dec–Mar'],['Status','First mover window']],'HIGHEST POTENTIAL','#4ade80'),po);pm(map,[16.1,108.2],'#4ade80',13).bindPopup(pop('Vietnam · Da Nang & Phu Quoc','SOUTHEAST ASIA · EARLY STAGE',[['Govt. commitment','VND 7,260bn · 38 projects'],['Intl. marinas','2 planned · Da Nang'],['Season','Nov–Apr · peak Dec–Mar']],'EARLY STAGE · HIGH UPSIDE','#4ade80'),po);pm(map,[10.6,103.8],'#4ade80',11).bindPopup(pop('Cambodia · Coast','SOUTHEAST ASIA · NASCENT',[['Intl. marinas','None existing'],['Developing','Kep · Kampot · Sihanoukville'],['Season','Nov–Apr · peak Dec–Mar']],'NASCENT · LONG TERM','#4ade80'),po);pm(map,[4.2,73.5],'#a78bfa',11).bindPopup(pop('Maldives','INDIAN OCEAN · NICHE',[['Demand tier','Ultra-premium'],['Infrastructure gap','Significant'],['Complexity','High regulatory']],'NICHE · SPECIALIST ONLY','#a78bfa'),po);pm(map,[37.5,26],'#a78bfa',11).bindPopup(pop('East Med · Greece & Turkey','WATCHLIST · MED ECOSYSTEM',[['Investment','Capacity expansion'],['Risk','Low · EU / NATO'],['Season','Jul–Aug peak · Apr–Oct']],'MEDIUM TERM · LOWER UPSIDE','#a78bfa'),po)}
-function initSeaMap(){window._m2=true;const map=L.map('seaMap',{center:[11,105],zoom:4,zoomControl:false,attributionControl:false,dragging:false,touchZoom:false,doubleClickZoom:false,scrollWheelZoom:false,boxZoom:false,keyboard:false});L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:8}).addTo(map);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:8,opacity:.45}).addTo(map);function mk(ll,color,label,type){return L.circleMarker(ll,{radius:type==='plan'?9:7,color,weight:2,fillColor:color,fillOpacity:type==='plan'?.18:.38,dashArray:type==='plan'?'4 4':''}).addTo(map).bindTooltip(label,{permanent:false,direction:'top',opacity:.92,className:''})}mk([12.8,100.9],'#4ade80','Ocean Marina Jomtien · 455 berths · Existing','existing');mk([7.96,98.39],'#4ade80','Royal Phuket Marina · Existing','existing');mk([7.88,98.44],'#4ade80','Phuket Boat Lagoon · Existing','existing');mk([12.9,100.87],'#4ade80','Ocean Marina Jomtien · Existing','existing');mk([16.07,108.22],'#38bdf8','Da Nang · Planned international marina cluster','plan');mk([10.23,103.96],'#38bdf8','Phu Quoc · Development stage','plan');mk([10.6,103.8],'#a78bfa','Cambodia coast · Long-term potential','plan');const leg=L.control({position:'bottomleft'});leg.onAdd=()=>{const d=L.DomUtil.create('div','');d.style.cssText='background:rgba(5,9,20,.88);border:1px solid rgba(255,255,255,.08);border-radius:8px;padding:.6rem .8rem;font-size:.65rem;color:#94a3b8;font-family:DM Sans,sans-serif;backdrop-filter:blur(10px)';d.innerHTML='<div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.3rem"><div style="width:8px;height:8px;border-radius:50%;background:#4ade80"></div>Existing marina</div><div style="display:flex;align-items:center;gap:.4rem"><div style="width:8px;height:8px;border-radius:50%;border:2px dashed #38bdf8"></div>Planned / development</div>';return d};leg.addTo(map)}
+function initMap(){window._m1=true;const map=L.map('map',{center:[20,35],zoom:2,zoomControl:false,attributionControl:false,dragging:false,touchZoom:false,doubleClickZoom:false,scrollWheelZoom:false,boxZoom:false,keyboard:false});L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:8}).addTo(map);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:8,opacity:.4}).addTo(map);const zs=c=>({color:c,weight:1.5,opacity:.7,fillColor:c,fillOpacity:.13,dashArray:'5 5'});L.polygon([[30,-6],[30,36],[42,36],[46,18],[44,8],[38,-6]],zs('#f59e0b')).addTo(map);L.polygon([[9,-85],[9,-60],[24,-60],[26,-75],[22,-88],[14,-90]],zs('#f59e0b')).addTo(map);L.polygon([[12,40],[12,60],[26,60],[30,50],[28,38],[20,38]],zs('#f87171')).addTo(map);L.polygon([[0,98],[0,122],[22,122],[24,100],[16,96],[5,96]],zs('#4ade80')).addTo(map);L.polygon([[-5,68],[-5,80],[8,80],[8,68]],{color:'#a78bfa',weight:1,opacity:.45,fillColor:'#a78bfa',fillOpacity:.09,dashArray:'3 5'}).addTo(map);L.polygon([[30,22],[30,36],[42,36],[42,22]],{color:'#a78bfa',weight:1,opacity:.35,fillColor:'#a78bfa',fillOpacity:.06,dashArray:'3 5'}).addTo(map)}
+function initSeaMap(){window._m2=true;const map=L.map('seaMap',{center:[11,105],zoom:4,zoomControl:false,attributionControl:false,dragging:false,touchZoom:false,doubleClickZoom:false,scrollWheelZoom:false,boxZoom:false,keyboard:false});L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:8}).addTo(map);L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png',{subdomains:'abcd',maxZoom:8,opacity:.45}).addTo(map);function mk(ll,color,label,type){return L.circleMarker(ll,{radius:type==='plan'?9:7,color,weight:2,fillColor:color,fillOpacity:type==='plan'?.18:.38,dashArray:type==='plan'?'4 4':''}).addTo(map).bindTooltip(label,{permanent:false,direction:'top',opacity:.92})}mk([12.8,100.9],'#4ade80','Ocean Marina Jomtien · 455 berths · Existing','existing');mk([7.96,98.39],'#4ade80','Royal Phuket Marina · Existing','existing');mk([7.88,98.44],'#4ade80','Phuket Boat Lagoon · Existing','existing');mk([16.07,108.22],'#38bdf8','Da Nang · Planned marina cluster','plan');mk([10.23,103.96],'#38bdf8','Phu Quoc · Development stage','plan');mk([10.6,103.8],'#a78bfa','Cambodia coast · Long-term potential','plan')}
 </script>
 </body>
 </html>
