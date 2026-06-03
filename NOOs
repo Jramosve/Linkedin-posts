@@ -1,0 +1,386 @@
+html = '''<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOO · The Asset-Owner Model</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080c18;--text:#f1f5f9;--muted:#475569;--gold:#f59e0b;--green:#4ade80;--red:#f87171;--slate:#38bdf8;--purple:#a78bfa;--surface:rgba(255,255,255,.03)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-family:"DM Sans",sans-serif;color:var(--text)}
+.deck{width:100vw;height:100vh;position:relative}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.97);transition:opacity .45s ease,transform .45s ease;pointer-events:none;overflow:hidden}
+.slide.active{opacity:1;transform:scale(1);pointer-events:all}
+.content{position:relative;z-index:2;width:100%;max-width:1100px;padding:clamp(1.4rem,3vw,2.8rem)}
+.reveal{opacity:0;transform:translateY(14px)}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);animation:float-slow 14s ease-in-out infinite}
+@keyframes float-slow{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-35px)}}
+.nav-controls{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:200;background:rgba(255,255,255,.04);backdrop-filter:blur(12px);padding:8px 20px;border-radius:40px;border:1px solid rgba(255,255,255,.08)}
+.nav-btn{width:32px;height:32px;border:none;background:rgba(255,255,255,.06);color:var(--slate);border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);cursor:pointer;transition:all .3s}.dot.active{background:var(--slate);transform:scale(1.4)}
+.slide-counter{font-size:.68rem;color:var(--muted);min-width:32px;text-align:center}
+.author-tag{position:fixed;bottom:20px;right:26px;z-index:300;font-size:.63rem;font-weight:600;letter-spacing:.05em;color:rgba(148,163,184,.35);pointer-events:none}
+.label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.pill{font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:4px}
+.p-pos{background:rgba(74,222,128,.12);color:#4ade80}.p-neg{background:rgba(248,113,113,.12);color:#f87171}.p-neu{background:rgba(245,158,11,.12);color:#f59e0b}.p-blue{background:rgba(56,189,248,.12);color:#38bdf8}
+.mini{font-size:.78rem;line-height:1.55;color:#94a3b8}
+.flow-wrap{display:flex;align-items:center;gap:0;width:100%;margin-top:.9rem}
+.flow-node{flex:1;display:flex;flex-direction:column;align-items:center;position:relative}
+.flow-box{width:100%;padding:.75rem .5rem;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);text-align:center;position:relative;z-index:1}
+.flow-arrow{width:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.18);font-size:1.1rem;position:relative;top:-10px}
+.flow-num{font-size:1.6rem;font-weight:900;font-family:"Playfair Display",serif;line-height:1}
+.flow-label{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#475569;margin-top:.3rem;line-height:1.3}
+.flow-sub{font-size:.68rem;color:#64748b;margin-top:.25rem;line-height:1.4}
+.flow-pill{font-size:.55rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-top:.35rem;display:inline-block}
+.bar-row{display:grid;grid-template-columns:130px 1fr 52px;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.bar-track{height:22px;border-radius:999px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);overflow:hidden}
+.bar-fill{height:100%;border-radius:999px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.bar-val{font-size:.7rem;font-weight:700;text-align:right;color:#cbd5e1}
+.bar-lbl{font-size:.72rem;font-weight:600;color:#94a3b8}
+.vs-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:.8rem;align-items:start;margin-top:.8rem}
+.vs-col{display:flex;flex-direction:column;gap:.55rem}
+.vs-row{padding:.6rem .85rem;border-radius:9px;font-size:.78rem;line-height:1.5;color:#cbd5e1;border:1px solid rgba(255,255,255,.06);background:rgba(255,255,255,.025)}
+.vs-label{font-size:.55rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;padding:.22rem .7rem;border-radius:4px;text-align:center;margin-bottom:.1rem;display:block}
+.vs-divider{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;padding-top:1.8rem}
+.vs-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.12)}
+.stat-card{border-radius:14px;padding:1rem 1.1rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);text-align:center}
+.stat-val{font-size:2.2rem;font-weight:900;font-family:"Playfair Display",serif;line-height:1;margin-bottom:.15rem}
+.stat-lbl{font-size:.6rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#475569}
+.stat-note{font-size:.68rem;color:#64748b;margin-top:.25rem}
+.thesis-line{font-family:"Playfair Display",serif;font-size:clamp(1.05rem,1.9vw,1.45rem);font-weight:700;line-height:1.55;color:#e2e8f0;border-left:2px solid var(--slate);padding-left:1rem;margin-bottom:.85rem}
+</style>
+</head>
+<body>
+<div class="author-tag">Javier Ramos Velasco &middot; Jos&eacute; Mar&iacute;a Serraclara</div>
+<div class="deck">
+
+<div class="slide active" data-slide="1">
+  <div class="blob" style="width:520px;height:520px;top:-140px;right:-100px;background:#0369a1;opacity:.13"></div>
+  <div class="blob" style="width:280px;height:280px;bottom:-90px;left:-60px;background:#1e3a5f;opacity:.09;animation-delay:5s"></div>
+  <div class="content" style="text-align:center">
+    <div class="reveal" style="display:inline-block;background:rgba(56,189,248,.08);border:1px solid rgba(56,189,248,.2);border-radius:40px;padding:.28rem 1.1rem;font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:#38bdf8;margin-bottom:1.3rem">Non-Operating Owners &middot; The Capital Case</div>
+    <h1 class="reveal" style="font-family:\'Playfair Display\',serif;font-size:clamp(1.9rem,4.5vw,3.7rem);font-weight:900;line-height:1.1;margin-bottom:1.1rem">The smartest money in shipping<br><span style="color:#38bdf8">doesn\'t move a single container.</span></h1>
+    <p class="reveal" style="font-size:clamp(.85rem,1.2vw,.98rem);color:#94a3b8;max-width:680px;margin:0 auto 2rem;line-height:1.7">Non-Operating Owners control 35&ndash;40% of the global fleet by tonnage. They own the vessel, lease the earnings, and never touch the cargo. That separation of asset and operation is not a compromise &mdash; it is the model.</p>
+    <div class="reveal" style="display:flex;justify-content:center;gap:2.5rem;flex-wrap:wrap">
+      <div style="text-align:center"><div style="font-size:1.6rem;font-weight:800;color:#f1f5f9">35&ndash;40%</div><div class="label" style="color:var(--muted);margin-top:.15rem">Global fleet by tonnage</div></div>
+      <div style="width:1px;background:rgba(255,255,255,.07)"></div>
+      <div style="text-align:center"><div style="font-size:1.6rem;font-weight:800;color:#f59e0b">900k TEU</div><div class="label" style="color:var(--muted);margin-top:.15rem">Seaspan capacity alone</div></div>
+      <div style="width:1px;background:rgba(255,255,255,.07)"></div>
+      <div style="text-align:center"><div style="font-size:1.6rem;font-weight:800;color:#38bdf8">1&ndash;3 yr</div><div class="label" style="color:var(--muted);margin-top:.15rem">Typical time charter</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="2">
+  <div class="blob" style="width:360px;height:360px;top:-80px;right:-80px;background:#0c4a6e;opacity:.1"></div>
+  <div class="content">
+    <div class="reveal label" style="color:var(--muted);margin-bottom:.3rem">The Ecosystem</div>
+    <h2 class="reveal" style="font-family:\'Playfair Display\',serif;font-size:clamp(1.4rem,2.6vw,1.95rem);font-weight:700;margin-bottom:.3rem">Four players. One vessel. <span style="color:#38bdf8">None of them do the same job.</span></h2>
+    <p class="reveal" style="font-size:.83rem;color:#94a3b8;line-height:1.6;max-width:740px;margin-bottom:1rem">Shipping looks like one industry from the outside. From the inside, it is at least four different businesses sharing the same steel hull.</p>
+    <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.75rem;margin-bottom:1rem">
+      <div style="border-radius:14px;padding:1rem;border:1px solid rgba(56,189,248,.25);background:rgba(56,189,248,.04)">
+        <div style="font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#38bdf8;margin-bottom:.4rem">NOO</div>
+        <div style="font-size:.95rem;font-weight:700;margin-bottom:.35rem">Asset Owner</div>
+        <div class="mini">Owns the vessel. Earns charter hire. Bears residual value risk. Does not operate.</div>
+        <div style="margin-top:.55rem;font-size:.65rem;font-weight:700;color:#38bdf8">&larr; This is the investment</div>
+      </div>
+      <div style="border-radius:14px;padding:1rem;border:1px solid rgba(245,158,11,.2);background:rgba(245,158,11,.03)">
+        <div style="font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f59e0b;margin-bottom:.4rem">Carrier</div>
+        <div style="font-size:.95rem;font-weight:700;margin-bottom:.35rem">Operator</div>
+        <div class="mini">Charters the vessel. Runs the route. Manages bunkers, port calls, crew. Pays hire daily.</div>
+        <div style="margin-top:.55rem;font-size:.65rem;font-weight:700;color:#f59e0b">MSC &middot; Maersk &middot; CMA CGM</div>
+      </div>
+      <div style="border-radius:14px;padding:1rem;border:1px solid rgba(167,139,250,.2);background:rgba(167,139,250,.03)">
+        <div style="font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a78bfa;margin-bottom:.4rem">Shipper</div>
+        <div style="font-size:.95rem;font-weight:700;margin-bottom:.35rem">Cargo Owner</div>
+        <div class="mini">Books space on the vessel. Pays freight rate. Relationship is with the carrier, not the NOO.</div>
+        <div style="margin-top:.55rem;font-size:.65rem;font-weight:700;color:#a78bfa">Retailers &middot; Manufacturers</div>
+      </div>
+      <div style="border-radius:14px;padding:1rem;border:1px solid rgba(74,222,128,.2);background:rgba(74,222,128,.03)">
+        <div style="font-size:.6rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#4ade80;margin-bottom:.4rem">Capital</div>
+        <div style="font-size:.95rem;font-weight:700;margin-bottom:.35rem">Debt / Equity</div>
+        <div class="mini">Finances the acquisition. Charter contract is the collateral. NOO is the credit story.</div>
+        <div style="margin-top:.55rem;font-size:.65rem;font-weight:700;color:#4ade80">Banks &middot; Bonds &middot; Ship finance</div>
+      </div>
+    </div>
+    <div class="reveal" style="padding:.75rem 1rem;border-radius:10px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);font-size:.8rem;color:#94a3b8;line-height:1.55">
+      <span style="color:#38bdf8;font-weight:700">The NOO insight:</span> The asset owner sits between capital markets and the operating world, earning a spread. The vessel is the collateral. The charter is the income statement. The residual is the upside.
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="3">
+  <div class="blob" style="width:400px;height:400px;top:-100px;right:-80px;background:#1e3a5f;opacity:.1"></div>
+  <div class="blob" style="width:250px;height:250px;bottom:-70px;left:-50px;background:#0369a1;opacity:.08;animation-delay:6s"></div>
+  <div class="content">
+    <div class="reveal label" style="color:var(--muted);margin-bottom:.3rem">Investment Flow</div>
+    <h2 class="reveal" style="font-family:\'Playfair Display\',serif;font-size:clamp(1.4rem,2.6vw,1.95rem);font-weight:700;margin-bottom:.25rem">Buy the asset. <span style="color:#4ade80">Lease the earnings.</span> Sell at the cycle.</h2>
+    <p class="reveal" style="font-size:.82rem;color:#94a3b8;line-height:1.6;max-width:760px;margin-bottom:.85rem">The NOO model is simple in principle. The edge comes from execution &mdash; timing the acquisition, locking the charter, and reading the residual correctly.</p>
+    <div class="flow-wrap reveal">
+      <div class="flow-node">
+        <div class="flow-box" style="border-color:rgba(56,189,248,.3);background:rgba(56,189,248,.06)">
+          <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#38bdf8;margin-bottom:.3rem">01</div>
+          <div class="flow-num" style="color:#38bdf8">Acquire</div>
+          <div class="flow-label">Vessel purchase</div>
+          <div class="flow-sub">Newbuild or S&amp;P<br>Debt + equity</div>
+          <div class="flow-pill p-blue">Capital deployed</div>
+        </div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node">
+        <div class="flow-box" style="border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05)">
+          <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f59e0b;margin-bottom:.3rem">02</div>
+          <div class="flow-num" style="color:#f59e0b">Charter</div>
+          <div class="flow-label">Time charter out</div>
+          <div class="flow-sub">1&ndash;3 yr contract<br>Daily hire locked</div>
+          <div class="flow-pill p-neu">Cash flow secured</div>
+        </div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node">
+        <div class="flow-box" style="border-color:rgba(74,222,128,.3);background:rgba(74,222,128,.05)">
+          <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#4ade80;margin-bottom:.3rem">03</div>
+          <div class="flow-num" style="color:#4ade80">Earn</div>
+          <div class="flow-label">Carrier pays daily</div>
+          <div class="flow-sub">Service debt<br>Distribute free cash</div>
+          <div class="flow-pill p-pos">Predictable yield</div>
+        </div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node">
+        <div class="flow-box" style="border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.05)">
+          <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a78bfa;margin-bottom:.3rem">04</div>
+          <div class="flow-num" style="color:#a78bfa">Re-rate</div>
+          <div class="flow-label">Charter renewal</div>
+          <div class="flow-sub">Refix at higher rate<br>or extend</div>
+          <div class="flow-pill" style="background:rgba(167,139,250,.12);color:#a78bfa">Rate upside</div>
+        </div>
+      </div>
+      <div class="flow-arrow">&rarr;</div>
+      <div class="flow-node">
+        <div class="flow-box" style="border-color:rgba(248,113,113,.3);background:rgba(248,113,113,.05)">
+          <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f87171;margin-bottom:.3rem">05</div>
+          <div class="flow-num" style="color:#f87171">Exit</div>
+          <div class="flow-label">Vessel sale</div>
+          <div class="flow-sub">Cycle peak or<br>scrap value</div>
+          <div class="flow-pill p-neg">Residual capture</div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.7rem;margin-top:.85rem">
+      <div style="padding:.65rem .9rem;border-radius:9px;background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.12)">
+        <div style="font-size:.7rem;font-weight:700;color:#38bdf8;margin-bottom:.2rem">The collateral logic</div>
+        <div class="mini">The vessel is the asset. The charter is the cash flow. Together they are a financeable credit story.</div>
+      </div>
+      <div style="padding:.65rem .9rem;border-radius:9px;background:rgba(74,222,128,.05);border:1px solid rgba(74,222,128,.12)">
+        <div style="font-size:.7rem;font-weight:700;color:#4ade80;margin-bottom:.2rem">Where alpha lives</div>
+        <div class="mini">Buying in down-cycle. Locking long charters at the inflection. Residual is the return enhancer.</div>
+      </div>
+      <div style="padding:.65rem .9rem;border-radius:9px;background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.12)">
+        <div style="font-size:.7rem;font-weight:700;color:#f87171;margin-bottom:.2rem">The real risk</div>
+        <div class="mini">Residual value at exit. Charter counterparty credit. Obsolescence from EEXI / CII regulation.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="4">
+  <div class="blob" style="width:380px;height:380px;top:-90px;right:-70px;background:#0c4a6e;opacity:.1"></div>
+  <div class="content">
+    <div class="reveal label" style="color:var(--muted);margin-bottom:.3rem">Two Business Models</div>
+    <h2 class="reveal" style="font-family:\'Playfair Display\',serif;font-size:clamp(1.4rem,2.6vw,1.95rem);font-weight:700;margin-bottom:.25rem">Same vessel. <span style="color:#38bdf8">Completely different game.</span></h2>
+    <p class="reveal" style="font-size:.82rem;color:#94a3b8;line-height:1.6;max-width:740px;margin-bottom:.8rem">Carriers and NOOs share the same asset class but operate on different risk surfaces. That split is where the investable edge lives.</p>
+    <div class="vs-grid reveal">
+      <div class="vs-col">
+        <span class="vs-label" style="background:rgba(245,158,11,.1);color:#f59e0b">Carrier &middot; Operator logic</span>
+        <div class="vs-row"><span style="color:#f59e0b;font-weight:700">Revenue:</span> Freight rates &mdash; volatile, demand-driven</div>
+        <div class="vs-row"><span style="color:#f59e0b;font-weight:700">Cost base:</span> Fuel, port, crew, hire &mdash; all variable</div>
+        <div class="vs-row"><span style="color:#f59e0b;font-weight:700">Asset stance:</span> Fleet as a capacity tool, not an investment</div>
+        <div class="vs-row"><span style="color:#f59e0b;font-weight:700">Capital:</span> Freed for route &amp; network expansion</div>
+        <div class="vs-row"><span style="color:#f59e0b;font-weight:700">Cycle:</span> Full exposure &mdash; top and bottom</div>
+        <div class="vs-row" style="border-color:rgba(245,158,11,.2)"><span style="color:#f59e0b;font-weight:700">Edge:</span> Scale, customers, logistics integration</div>
+      </div>
+      <div class="vs-divider">
+        <div class="vs-dot"></div><div class="vs-dot"></div><div class="vs-dot"></div>
+        <div style="font-size:.75rem;font-weight:800;color:rgba(255,255,255,.12);writing-mode:vertical-rl;letter-spacing:.1em;text-transform:uppercase;transform:rotate(180deg)">vs</div>
+        <div class="vs-dot"></div><div class="vs-dot"></div><div class="vs-dot"></div>
+      </div>
+      <div class="vs-col">
+        <span class="vs-label" style="background:rgba(56,189,248,.1);color:#38bdf8">NOO &middot; Asset-owner logic</span>
+        <div class="vs-row"><span style="color:#38bdf8;font-weight:700">Revenue:</span> Charter hire &mdash; contracted, predictable</div>
+        <div class="vs-row"><span style="color:#38bdf8;font-weight:700">Cost base:</span> Dry-dock, insurance, finance &mdash; manageable</div>
+        <div class="vs-row"><span style="color:#38bdf8;font-weight:700">Asset stance:</span> Vessel is the core investment</div>
+        <div class="vs-row"><span style="color:#38bdf8;font-weight:700">Capital:</span> Leveraged acquisition &mdash; balance sheet is the business</div>
+        <div class="vs-row"><span style="color:#38bdf8;font-weight:700">Cycle:</span> Managed &mdash; risk isolated to re-charter windows</div>
+        <div class="vs-row" style="border-color:rgba(56,189,248,.2)"><span style="color:#38bdf8;font-weight:700">Edge:</span> Fleet timing, charter execution, residual discipline</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="5">
+  <div class="blob" style="width:350px;height:350px;top:-80px;right:-70px;background:#1e3a5f;opacity:.1"></div>
+  <div class="blob" style="width:220px;height:220px;bottom:-60px;left:-40px;background:#0369a1;opacity:.07;animation-delay:7s"></div>
+  <div class="content">
+    <div class="reveal label" style="color:var(--muted);margin-bottom:.3rem">Why This Matters Now</div>
+    <h2 class="reveal" style="font-family:\'Playfair Display\',serif;font-size:clamp(1.4rem,2.6vw,1.95rem);font-weight:700;margin-bottom:.75rem">Four structural forces are making the NOO model <span style="color:#4ade80">more relevant, not less.</span></h2>
+    <div class="reveal" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1rem">
+      <div class="stat-card">
+        <div class="stat-val" style="color:#38bdf8">+22%</div>
+        <div class="stat-lbl">Charter rates YoY</div>
+        <div class="stat-note">Container segment, 2024&ndash;25</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:#4ade80">~40%</div>
+        <div class="stat-lbl">Fleet chartered in</div>
+        <div class="stat-note">Even MSC and Maersk</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:#f59e0b">900k</div>
+        <div class="stat-lbl">TEU Seaspan</div>
+        <div class="stat-note">One NOO, global scale</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" style="color:#f87171">2027</div>
+        <div class="stat-lbl">EEXI / CII tightening</div>
+        <div class="stat-note">Older tonnage at risk</div>
+      </div>
+    </div>
+    <div class="reveal" style="background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:.9rem 1rem">
+      <div class="label" style="color:var(--muted);margin-bottom:.75rem">Structural drivers &mdash; relative weight for the NOO thesis</div>
+      <div class="bar-row">
+        <div class="bar-lbl">Charter demand</div>
+        <div class="bar-track"><div class="bar-fill" data-width="90" style="background:linear-gradient(90deg,#4ade80,#22c55e)"></div></div>
+        <div class="bar-val">Very high</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-lbl">Fleet orderbook</div>
+        <div class="bar-track"><div class="bar-fill" data-width="82" style="background:linear-gradient(90deg,#38bdf8,#0ea5e9)"></div></div>
+        <div class="bar-val">High</div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-lbl">Reg. obsolescence</div>
+        <div class="bar-track"><div class="bar-fill" data-width="68" style="background:linear-gradient(90deg,#f59e0b,#d97706)"></div></div>
+        <div class="bar-val">Rising</div>
+      </div>
+      <div class="bar-row" style="margin-bottom:0">
+        <div class="bar-lbl">Financing cost</div>
+        <div class="bar-track"><div class="bar-fill" data-width="54" style="background:linear-gradient(90deg,#f87171,#ef4444)"></div></div>
+        <div class="bar-val">Elevated</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="6">
+  <div class="blob" style="width:380px;height:380px;top:-90px;right:-70px;background:#0c4a6e;opacity:.09"></div>
+  <div class="content">
+    <div class="reveal label" style="color:var(--muted);margin-bottom:.3rem">Fleet Segments</div>
+    <h2 class="reveal" style="font-family:\'Playfair Display\',serif;font-size:clamp(1.4rem,2.6vw,1.95rem);font-weight:700;margin-bottom:.25rem">Not all NOO strategies are equal. <span style="color:#38bdf8">Scale changes the game.</span></h2>
+    <p class="reveal" style="font-size:.82rem;color:#94a3b8;line-height:1.6;max-width:740px;margin-bottom:.85rem">Segment determines counterparty, charter structure, liquidity, and regulatory exposure. Each step up the ladder compresses the entry window.</p>
+    <div class="reveal" style="display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem">
+      <div style="border-radius:13px;padding:.85rem .9rem;border:1px solid rgba(74,222,128,.2);background:rgba(74,222,128,.04)">
+        <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#4ade80;margin-bottom:.35rem">Entry</div>
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:.3rem">Handysize</div>
+        <div style="font-size:.68rem;color:#94a3b8;line-height:1.5;margin-bottom:.45rem">10&ndash;40k DWT &middot; Shallow draft &middot; Regional</div>
+        <div style="font-size:.62rem;font-weight:700;color:#4ade80;line-height:1.7">&#10003; Deep S&amp;P market<br>&#10003; Lower ticket size<br>&#10003; Wide charter pool</div>
+      </div>
+      <div style="border-radius:13px;padding:.85rem .9rem;border:1px solid rgba(56,189,248,.2);background:rgba(56,189,248,.04)">
+        <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#38bdf8;margin-bottom:.35rem">Core</div>
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:.3rem">Panamax</div>
+        <div style="font-size:.68rem;color:#94a3b8;line-height:1.5;margin-bottom:.45rem">60&ndash;80k DWT &middot; Canal transit &middot; Key lanes</div>
+        <div style="font-size:.62rem;font-weight:700;color:#38bdf8;line-height:1.7">&#10003; High liquidity<br>&#10003; Strong charter demand<br>&#10003; Good residual history</div>
+      </div>
+      <div style="border-radius:13px;padding:.85rem .9rem;border:1px solid rgba(245,158,11,.2);background:rgba(245,158,11,.04)">
+        <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f59e0b;margin-bottom:.35rem">Growth</div>
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:.3rem">Post-Panamax</div>
+        <div style="font-size:.68rem;color:#94a3b8;line-height:1.5;margin-bottom:.45rem">8&ndash;12k TEU &middot; Hub ports &middot; Scale</div>
+        <div style="font-size:.62rem;font-weight:700;color:#f59e0b;line-height:1.7">&#9651; Fewer buyers<br>&#9651; Longer re-charter<br>&#9651; Higher capex</div>
+      </div>
+      <div style="border-radius:13px;padding:.85rem .9rem;border:1px solid rgba(167,139,250,.2);background:rgba(167,139,250,.04)">
+        <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a78bfa;margin-bottom:.35rem">Scale</div>
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:.3rem">VLCC / ULCV</div>
+        <div style="font-size:.68rem;color:#94a3b8;line-height:1.5;margin-bottom:.45rem">15k+ TEU / 250k DWT &middot; Majors</div>
+        <div style="font-size:.62rem;font-weight:700;color:#a78bfa;line-height:1.7">&#9651; Few counterparties<br>&#9651; High residual risk<br>&#9651; Specialist play</div>
+      </div>
+      <div style="border-radius:13px;padding:.85rem .9rem;border:1px solid rgba(248,113,113,.2);background:rgba(248,113,113,.04)">
+        <div style="font-size:.55rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#f87171;margin-bottom:.35rem">Specialist</div>
+        <div style="font-size:.9rem;font-weight:700;margin-bottom:.3rem">LNG / LPG</div>
+        <div style="font-size:.68rem;color:#94a3b8;line-height:1.5;margin-bottom:.45rem">Energy transition &middot; Long charters</div>
+        <div style="font-size:.62rem;font-weight:700;color:#f87171;line-height:1.7">&#10003; Longest charters<br>&#9651; Technical complexity<br>&#9651; High entry cost</div>
+      </div>
+    </div>
+    <div class="reveal" style="margin-top:.8rem;padding:.65rem 1rem;border-radius:9px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);font-size:.78rem;color:#94a3b8;line-height:1.55">
+      <span style="color:#38bdf8;font-weight:700">The thesis:</span> The highest risk-adjusted entry windows historically open in Panamax and Handysize &mdash; deep markets, multiple counterparties, and an active S&amp;P market that gives you an exit even when rates disappoint.
+    </div>
+  </div>
+</div>
+
+<div class="slide" data-slide="7">
+  <div class="blob" style="width:480px;height:480px;top:-120px;right:-90px;background:#0369a1;opacity:.12"></div>
+  <div class="blob" style="width:260px;height:260px;bottom:-80px;left:-50px;background:#1e3a5f;opacity:.09;animation-delay:5s"></div>
+  <div class="content">
+    <div class="reveal label" style="color:var(--muted);margin-bottom:.3rem">The Investment Thesis</div>
+    <h2 class="reveal" style="font-family:\'Playfair Display\',serif;font-size:clamp(1.4rem,2.6vw,1.95rem);font-weight:700;margin-bottom:1.1rem">In shipping, the control of the vessel<br><span style="color:#38bdf8">and the control of the customer<br>are no longer the same thing.</span></h2>
+    <div class="reveal" style="display:flex;flex-direction:column;gap:.7rem;max-width:820px">
+      <div class="thesis-line">The NOO model exists because carriers need flexibility more than they need ownership. That structural preference is not cyclical &mdash; it is permanent.</div>
+      <div class="thesis-line" style="border-color:#4ade80">Alpha in this model is not about predicting rates. It is about acquiring below replacement cost, locking cash flow at the inflection, and being disciplined about residual.</div>
+      <div class="thesis-line" style="border-color:#f59e0b">Seaspan, Danaos, Costamare &mdash; the most sophisticated players have built institutional-grade balance sheets doing exactly this. The model scales. The question is always the entry point.</div>
+    </div>
+    <div class="reveal" style="margin-top:1.1rem;display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-radius:10px;background:rgba(56,189,248,.05);border:1px solid rgba(56,189,248,.15)">
+      <div style="font-size:.82rem;color:#94a3b8;font-style:italic;max-width:640px;line-height:1.55">"The vessel is the collateral. The charter is the income statement. The cycle is the alpha."</div>
+      <div style="text-align:right;flex-shrink:0;margin-left:1.5rem">
+        <div style="font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(56,189,248,.5)">Javier Ramos Velasco</div>
+        <div style="font-size:.63rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(56,189,248,.5)">Jos&eacute; Mar&iacute;a Serraclara</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="nav-controls">
+  <button class="nav-btn" onclick="changeSlide(-1)">&#8249;</button>
+  <div style="display:flex;gap:8px" id="dots"></div>
+  <button class="nav-btn" onclick="changeSlide(1)">&#8250;</button>
+  <span class="slide-counter" id="counter">1 / 7</span>
+</div>
+<script>
+let cur=1;
+const slides=document.querySelectorAll('.slide');
+const tot=slides.length;
+const dc=document.getElementById('dots');
+const ct=document.getElementById('counter');
+for(let i=1;i<=tot;i++){const d=document.createElement('div');d.className='dot'+(i===1?' active':'');d.onclick=()=>go(i);dc.appendChild(d)}
+function go(n){
+  document.querySelector('.slide.active').classList.remove('active');
+  document.querySelector('.slide[data-slide="'+n+'"]').classList.add('active');
+  cur=n;
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i+1===cur));
+  ct.textContent=cur+' / '+tot;
+  anim(document.querySelector('.slide.active'));
+}
+function changeSlide(d){let n=cur+d;if(n<1)n=tot;if(n>tot)n=1;go(n)}
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();changeSlide(1)}
+  if(e.key==='ArrowLeft'){e.preventDefault();changeSlide(-1)}
+});
+let tx=0;
+document.addEventListener('touchstart',e=>tx=e.touches[0].clientX);
+document.addEventListener('touchend',e=>{const d=tx-e.changedTouches[0].clientX;if(Math.abs(d)>50)changeSlide(d>0?1:-1)});
+function anim(slide){
+  slide.querySelectorAll('.reveal').forEach((el,i)=>{
+    el.style.transition='none';el.style.opacity='0';el.style.transform='translateY(14px)';
+    el.offsetHeight;
+    el.style.transition='opacity .32s ease '+(i*.07)+'s,transform .32s ease '+(i*.07)+'s';
+    el.style.opacity='1';el.style.transform='translateY(0)';
+  });
+  setTimeout(()=>{
+    slide.querySelectorAll('.bar-fill').forEach(b=>{b.style.width=(b.dataset.width||'0')+'%';});
+  },400);
+}
+anim(document.querySelector('.slide.active'));
+</script>
+</body>
+</html>'''
