@@ -10,24 +10,25 @@
 <style>
 :root{--bg:#080c18;--text:#f1f5f9;--muted:#475569;--gold:#f59e0b;--green:#4ade80;--red:#f87171;--slate:#38bdf8;--purple:#a78bfa}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-family:"DM Sans",sans-serif;color:var(--text)}
-.deck{width:100vw;height:100vh;position:relative}
-.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.97);transition:opacity .45s ease,transform .45s ease;pointer-events:none;overflow:hidden}
+html,body{background:var(--bg);min-height:100%;width:100%;overflow:auto;font-family:"DM Sans",sans-serif;color:var(--text)}
+body{display:flex;justify-content:center;align-items:flex-start;padding:0}
+.deck{width:1600px;min-width:1600px;height:900px;min-height:900px;position:relative;overflow:hidden;background:var(--bg)}
+.slide{position:absolute;inset:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.97);transition:opacity .45s ease,transform .45s ease;pointer-events:none;overflow:hidden}
 .slide.active{opacity:1;transform:scale(1);pointer-events:all}
-.content{position:relative;z-index:2;width:100%;max-width:1100px;padding:clamp(1.4rem,3vw,2.8rem)}
+.content{position:relative;z-index:2;width:100%;max-width:1100px;padding:2rem}
 .reveal{opacity:0;transform:translateY(14px)}
 .blob{position:absolute;border-radius:50%;filter:blur(90px);animation:float-slow 14s ease-in-out infinite}
 @keyframes float-slow{0%,100%{transform:translate(0,0)}50%{transform:translate(40px,-35px)}}
-.nav-controls{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:200;background:rgba(255,255,255,.04);backdrop-filter:blur(12px);padding:8px 20px;border-radius:40px;border:1px solid rgba(255,255,255,.08)}
+.nav-controls{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:200;background:rgba(255,255,255,.04);backdrop-filter:blur(12px);padding:8px 20px;border-radius:40px;border:1px solid rgba(255,255,255,.08)}
 .nav-btn{width:32px;height:32px;border:none;background:rgba(255,255,255,.06);color:var(--slate);border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.12);cursor:pointer;transition:all .3s}.dot.active{background:var(--slate);transform:scale(1.4)}
 .slide-counter{font-size:.68rem;color:var(--muted);min-width:32px;text-align:center}
-.author-tag{position:fixed;bottom:20px;right:26px;z-index:300;font-size:.63rem;font-weight:600;letter-spacing:.05em;color:rgba(148,163,184,.35);pointer-events:none}
+.author-tag{position:absolute;bottom:20px;right:26px;z-index:300;font-size:.63rem;font-weight:600;letter-spacing:.05em;color:rgba(148,163,184,.35);pointer-events:none}
 .label{font-size:.6rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
 .pill{font-size:.58rem;font-weight:700;padding:2px 8px;border-radius:4px}
 .p-pos{background:rgba(74,222,128,.12);color:#4ade80}.p-neg{background:rgba(248,113,113,.12);color:#f87171}.p-neu{background:rgba(245,158,11,.12);color:#f59e0b}.p-blue{background:rgba(56,189,248,.12);color:#38bdf8}
 .kicker{display:inline-block;padding:.28rem .7rem;border-radius:999px;font-size:.6rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:.55rem}.kicker-green{background:rgba(74,222,128,.08);border:1px solid rgba(74,222,128,.18);color:#4ade80}.kicker-red{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.16);color:#f87171}
-.map-layout{display:grid;gap:.55rem;height:100vh;padding:1.3rem 1.55rem .9rem;width:100%;position:relative;z-index:2}.map-layout-global{grid-template-rows:auto 1fr auto auto}.map-layout-sea{grid-template-rows:auto 1fr auto}
+.map-layout{display:grid;gap:.55rem;height:100%;padding:1.3rem 1.55rem .9rem;width:100%;position:relative;z-index:2}.map-layout-global{grid-template-rows:auto 1fr auto auto}.map-layout-sea{grid-template-rows:auto 1fr auto}
 #map,#seaMap{width:100%;height:100%;border-radius:12px;border:1px solid rgba(255,255,255,.07);overflow:hidden}.leaflet-container{background:#060d1a!important;cursor:default!important}.leaflet-control-zoom,.leaflet-control-attribution{display:none!important}
 .note-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:.7rem}.note{padding:.75rem .85rem;border-radius:10px;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.025)}
 .timeline{display:grid;grid-template-columns:190px repeat(12,1fr);gap:10px;align-items:center;margin-top:1.2rem}.month{font-size:.62rem;color:#334155;text-align:center;padding-bottom:.45rem}.market-label{font-size:.78rem;font-weight:700}.track{grid-column:2 / span 12;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:999px;height:28px;position:relative}.bar{position:absolute;top:4px;height:19px;border-radius:999px;font-size:.59rem;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 8px;white-space:nowrap}
@@ -44,8 +45,8 @@ html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-fam
   <div class="blob" style="width:300px;height:300px;bottom:-80px;left:-60px;background:#1e3a5f;opacity:.1;animation-delay:4s"></div>
   <div class="content" style="text-align:center">
     <div class="reveal" style="display:inline-block;background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.25);border-radius:40px;padding:.28rem 1.1rem;font-size:.72rem;letter-spacing:.13em;text-transform:uppercase;color:#f59e0b;margin-bottom:1.4rem">Marina Investment Report · 2026</div>
-    <h1 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(2rem,5vw,4rem);font-weight:900;line-height:1.1;margin-bottom:1rem">Marina Investment in<br><span style="color:#38bdf8">Emerging Markets</span></h1>
-    <p class="reveal" style="font-size:clamp(.85rem,1.25vw,1rem);color:#94a3b8;max-width:720px;margin:0 auto 2rem;line-height:1.7">The global superyacht fleet adds roughly 171 new yachts per year, while Mediterranean berth supply grows at under 1% annually. That gap is forcing demand beyond traditional hubs — and creating a case for new marina development in emerging markets.</p>
+    <h1 class="reveal" style="font-family:'Playfair Display',serif;font-size:3.9rem;font-weight:900;line-height:1.1;margin-bottom:1rem">Marina Investment in<br><span style="color:#38bdf8">Emerging Markets</span></h1>
+    <p class="reveal" style="font-size:.98rem;color:#94a3b8;max-width:720px;margin:0 auto 2rem;line-height:1.7">The global superyacht fleet adds roughly 171 new yachts per year, while Mediterranean berth supply grows at under 1% annually. That gap is forcing demand beyond traditional hubs — and creating a case for new marina development in emerging markets.</p>
     <div class="reveal" style="display:flex;justify-content:center;gap:2.5rem;margin-bottom:2rem;flex-wrap:wrap">
       <div style="text-align:center"><div style="font-size:1.5rem;font-weight:800">USD 19bn</div><div class="label" style="color:var(--muted);margin-top:.1rem">Global marina market 2025</div></div>
       <div style="width:1px;background:rgba(255,255,255,.08)"></div>
@@ -61,7 +62,7 @@ html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-fam
   <div class="map-layout map-layout-global">
     <div>
       <div class="label" style="color:var(--muted);margin-bottom:.18rem">Global Market Landscape · Marina Investment 2026</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.1rem,2.2vw,1.65rem);font-weight:700;line-height:1.15">Where Superyachts Go. <span style="color:#38bdf8">Leading &amp; Emerging Markets.</span></h2>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;line-height:1.15">Where Superyachts Go. <span style="color:#38bdf8">Leading &amp; Emerging Markets.</span></h2>
     </div>
     <div id="map"></div>
     <div class="note-grid">
@@ -79,8 +80,8 @@ html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-fam
   <div class="blob" style="width:340px;height:340px;top:-70px;right:-80px;background:#1e3a5f;opacity:.1"></div>
   <div class="content">
     <div class="reveal label" style="color:var(--muted);margin-bottom:.3rem">Seasonality</div>
-    <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.45rem,2.8vw,2rem);font-weight:700;margin-bottom:.4rem">The same yachts rotate. <span style="color:#38bdf8">Every market has a season led by the Mediterranenan and the Caribbean.</span></h2>
-    <p class="reveal" style="font-size:.84rem;color:#94a3b8;line-height:1.65;max-width:780px;margin-bottom:.2rem">Traditional and emerging marina markets do not all compete at the same time. Some complement each other, others fight for the same winter owner wallet.</p>
+    <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;margin-bottom:.4rem">The same yachts rotate. <span style="color:#38bdf8">Every market has a season. The question is which one still has room.</span></h2>
+    <p class="reveal" style="font-size:.84rem;color:#94a3b8;line-height:1.65;max-width:780px;margin-bottom:.2rem">Traditional and emerging marina markets do not all compete at the same time. Some complement each other — others fight for the same winter owner wallet.</p>
     <div class="timeline reveal">
       <div></div>
       <div class="month">Jan</div><div class="month">Feb</div><div class="month">Mar</div><div class="month">Apr</div><div class="month">May</div><div class="month">Jun</div><div class="month">Jul</div><div class="month">Aug</div><div class="month">Sep</div><div class="month">Oct</div><div class="month">Nov</div><div class="month">Dec</div>
@@ -95,7 +96,7 @@ html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-fam
       <div class="note"><div class="label" style="color:#fbbf24;margin-bottom:.2rem">Caribbean</div><div style="font-size:.73rem;color:#94a3b8">Best seasonal complement to the Med.</div></div>
       <div class="note"><div class="label" style="color:#f87171;margin-bottom:.2rem">GCC</div><div style="font-size:.73rem;color:#94a3b8">Same winter window. Geopolitical risk now a factor.</div></div>
       <div class="note"><div class="label" style="color:#4ade80;margin-bottom:.2rem">SEA</div><div style="font-size:.73rem;color:#94a3b8">Competes for the same winter demand, with far less supply.</div></div>
-      <div class="note"><div class="label" style="color:#a78bfa;margin-bottom:.2rem">Emerging</div><div style="font-size:.73rem;color:#94a3b8">Useful watchlist, with nitch markets.</div></div>
+      <div class="note"><div class="label" style="color:#a78bfa;margin-bottom:.2rem">Emerging</div><div style="font-size:.73rem;color:#94a3b8">Useful watchlist — not the core thesis.</div></div>
     </div>
   </div>
 </div>
@@ -104,26 +105,26 @@ html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-fam
   <div class="blob" style="width:340px;height:340px;top:-70px;right:-80px;background:#0369a1;opacity:.1"></div>
   <div class="content">
     <div class="reveal label" style="color:var(--muted);margin-bottom:.3rem">Capital Rotation</div>
-    <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:clamp(1.4rem,2.8vw,2rem);font-weight:700;margin-bottom:1rem">GCC stalls. <span style="color:#38bdf8">Capital rotates to where seasonality remains but risk falls.</span></h2>
+    <h2 class="reveal" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;margin-bottom:1rem">GCC stalls. <span style="color:#38bdf8">Capital rotates to where seasonality remains but risk falls.</span></h2>
     <div class="two-col">
       <div class="card card-red" style="display:flex;flex-direction:column;gap:1rem">
         <div>
           <div class="kicker kicker-red reveal" style="margin-bottom:.7rem">GCC · The disrupted frontrunner</div>
-          <div class="reveal" style="font-size:3.7rem;font-weight:900;font-family:'Playfair Display',serif;color:#f87171;line-height:1">321</div>
+          <div class="reveal" style="font-size:3.8rem;font-weight:900;font-family:'Playfair Display',serif;color:#f87171;line-height:1">321</div>
           <div class="reveal" style="font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#334155;margin-bottom:.35rem">Superyachts 30m+ in the region · 5.1% of global fleet</div>
           <p class="reveal" style="font-size:.86rem;color:#e2e8f0;line-height:1.55;font-style:italic">The GCC had the capital, the market and the ambition.</p>
         </div>
         <div style="display:flex;flex-direction:column;gap:.6rem" class="reveal">
           <div style="padding:.75rem .9rem;border-radius:10px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem"><span style="font-size:.74rem;font-weight:700;color:#f87171">Hormuz risk</span><span class="pill p-neg">Insurance +60%</span></div><div class="mini">Route uncertainty and insurance spikes are now reshaping the leisure investment case.</div></div>
           <div style="padding:.75rem .9rem;border-radius:10px;background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.18)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.25rem"><span style="font-size:.74rem;font-weight:700;color:#f87171">Investment pipeline</span><span class="pill p-neg">Contracts –40% YoY</span></div><div class="mini">The project pipeline remains real, but current geopolitical risk is delaying deployment.</div></div>
-          <div style="padding:.6rem .9rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)"><div class="mini" style="color:#64748b">Hormuz risk does not kill the thesis. It delays it, and redirects capital in the interim, openning the window for other markets.</div></div>
+          <div style="padding:.6rem .9rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06)"><div class="mini" style="color:#64748b">Hormuz risk does not kill the thesis. It delays it — and redirects capital in the interim.</div></div>
         </div>
       </div>
       <div class="card card-green" style="display:flex;flex-direction:column;gap:1rem">
         <div><div class="kicker kicker-green reveal" style="margin-bottom:.7rem">Where the capital goes next</div><p class="reveal" style="font-size:.86rem;color:#e2e8f0;line-height:1.55">Same seasonal window as the GCC. Lower geopolitical friction. The three markets below are the most logical receptors.</p></div>
         <div style="display:flex;flex-direction:column;gap:.65rem" class="reveal">
           <div style="padding:.85rem .95rem;border-radius:12px;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.2)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem"><span style="font-size:.88rem;font-weight:700;color:#4ade80">Southeast Asia</span><span class="pill p-pos">Highest upside</span></div><div style="display:flex;gap:.3rem;margin-bottom:.3rem"><div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#4ade80;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div></div><div class="mini">Winter overlap · proven tourism demand · thin berth base · first mover window intact.</div></div>
-          <div style="padding:.85rem .95rem;border-radius:12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.18)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem"><span style="font-size:.88rem;font-weight:700;color:#f59e0b">East Mediterranean</span><span class="pill p-neu">Medium upside</span></div><div style="display:flex;gap:.3rem;margin-bottom:.3rem"><div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div></div><div class="mini">Inside the Med ecosystem, safer operationally, but less asymmetric in upside.</div></div>
+          <div style="padding:.85rem .95rem;border-radius:12px;background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.18)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem"><span style="font-size:.88rem;font-weight:700;color:#f59e0b">East Mediterranean</span><span class="pill p-neu">Medium upside</span></div><div style="display:flex;gap:.3rem;margin-bottom:.3rem"><div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#f59e0b;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div></div><div class="mini">Inside the Med ecosystem — safer operationally, but less asymmetric in upside.</div></div>
           <div style="padding:.85rem .95rem;border-radius:12px;background:rgba(167,139,250,.05);border:1px solid rgba(167,139,250,.18)"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem"><span style="font-size:.88rem;font-weight:700;color:#a78bfa">Maldives · Indian Ocean</span><span class="pill p-blue">Specialist</span></div><div style="display:flex;gap:.3rem;margin-bottom:.3rem"><div style="flex:1;height:4px;border-radius:2px;background:#a78bfa;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:#a78bfa;opacity:.9"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div><div style="flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.1)"></div></div><div class="mini">Ultra-premium demand · real infrastructure gap · high regulatory complexity.</div></div>
         </div>
       </div>
@@ -135,7 +136,7 @@ html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-fam
   <div class="map-layout map-layout-sea">
     <div>
       <div class="label" style="color:var(--muted);margin-bottom:.18rem">Southeast Asia · Regional Detail</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:clamp(1.18rem,2.3vw,1.78rem);font-weight:700;line-height:1.12;margin-bottom:.25rem">Existing marinas, future projects, and the real trade-off. <span style="color:#4ade80">Opportunity vs execution.</span></h2>
+      <h2 style="font-family:'Playfair Display',serif;font-size:1.78rem;font-weight:700;line-height:1.12;margin-bottom:.25rem">Existing marinas, future projects, and the real trade-off. <span style="color:#4ade80">Opportunity vs execution.</span></h2>
       <p style="font-size:.84rem;color:#94a3b8;line-height:1.5;max-width:780px">One of the world’s leading tourism regions still has a surprisingly thin marina base. That mismatch is what makes the investment case interesting.</p>
     </div>
     <div class="sea-grid">
@@ -155,8 +156,8 @@ html,body{background:var(--bg);height:100vh;width:100vw;overflow:hidden;font-fam
         </div>
         <div class="panel panel-green">
           <div class="kicker kicker-green">Investment read</div>
-          <p class="panel-p-lg">This is not the safest marina market. But the demand is already there, you are not building it from scratch.</p>
-          <div style="font-size:.82rem;line-height:1.56;color:#cbd5e1">Emerging market risk. Proven tourism base. That combination is rare and that is exactly the point.</div>
+          <p class="panel-p-lg">This is not the safest marina market. But the demand is already there — you are not building it from scratch.</p>
+          <div style="font-size:.82rem;line-height:1.56;color:#cbd5e1">Emerging market risk. Proven tourism base. That combination is rare — and that is exactly the point.</div>
         </div>
       </div>
     </div>
